@@ -37,14 +37,30 @@ body {
   width: auto;
   object-fit: contain;
 }
+.catalog-btn {
+  background: var(--blue);
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  white-space: nowrap;
+}
 .search-box {
   flex: 1;
   display: flex;
   align-items: center;
   gap: 8px;
-  border: 1px solid var(--border);
+  border: 2px solid var(--blue);
   border-radius: 24px;
   overflow: hidden;
+}
+.search-category {
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  outline: none;
 }
 #search-input {
   flex: 1;
@@ -61,20 +77,25 @@ body {
   cursor: pointer;
   font-size: 16px;
 }
-.header-actions {
+.header-icons {
   display: flex;
   gap: 20px;
 }
-.header-actions a {
+.icon-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-decoration: none;
   color: var(--text);
-  font-size: 14px;
+  font-size: 12px;
 }
-.profile::before {
-  content: "👤 ";
+.icon-link img {
+  width: 32px;
+  height: 32px;
+  margin-bottom: 4px;
 }
-.cart::before {
-  content: "🛒 ";
+.cart-icon span {
+  font-weight: bold;
 }
 
 /* Меню категорий */
@@ -230,22 +251,6 @@ body {
   color: #666;
   border-top: 1px solid var(--border);
 }
-.footer .container {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.footer-links {
-  display: flex;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-.footer-links a {
-  text-decoration: none;
-  color: var(--text);
-  font-size: 14px;
-}
 .footer a {
   color: var(--orange);
 }
@@ -273,7 +278,8 @@ body {
   .product-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
   }
-  .footer-links {
-    justify-content: start;
+  .header-icons {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
