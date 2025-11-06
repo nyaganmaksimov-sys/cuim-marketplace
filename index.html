@@ -30,48 +30,72 @@
       <div class="logo">
         <img src="images/logo.svg" alt="ЦУИМ" width="120">
       </div>
-      <div class="search-container">
-        <div class="catalog-btn">Каталог</div>
-        <div class="search-box">
-          <select class="search-category">
-            <option value="">Везде</option>
-            <option value="food">Продукты</option>
-            <option value="flowers">Цветы</option>
-            <option value="candles">Свечи</option>
-          </select>
-          <input type="text" id="search-input" placeholder="Искать на ЦУИМ">
-          <button type="submit">🔍</button>
-        </div>
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Искать товары">
+        <button type="submit">🔍</button>
       </div>
     </div>
   </header>
 
-  <!-- Иконки под поиском -->
-  <div class="header-icons">
+  <!-- Меню категорий -->
+  <nav class="category-menu">
     <div class="container">
-      <a href="#" class="icon-link">
-        <img src="images/icon-login.png" alt="Войти">
-        <span>Войти</span>
-      </a>
-      <a href="#" class="icon-link">
-        <img src="images/icon-orders.png" alt="Заказы">
-        <span>Заказы</span>
-      </a>
-      <a href="#" class="icon-link">
-        <img src="images/icon-favorites.png" alt="Избранное">
-        <span>Избранное</span>
-      </a>
-      <a href="#" class="icon-link cart-icon">
-        <img src="images/icon-cart.png" alt="Корзина">
-        <span>Корзина (0)</span>
-      </a>
+      <a href="#" class="menu-item active">Все товары</a>
+      <a href="#" class="menu-item">Торговые центры</a>
+      <a href="#" class="menu-item">Продавцы</a>
+      <a href="#" class="menu-item">Услуги(beta)</a>
+      <a href="#" class="menu-item">Новинки</a>
+      <a href="#" class="menu-item">Хиты продаж</a>
+      <a href="#" class="menu-item">Оплата и доставка</a>
     </div>
-  </div>
+  </nav>
 
-  <!-- Главный баннер -->
-  <section class="main-banner">
+  <!-- Главный блок: баннер + категории -->
+  <section class="main-content">
     <div class="container">
-      <img src="images/banner-main.jpg" alt="Главный баннер" class="banner-image">
+      <div class="banner-section">
+        <div class="banner-image">
+          <img src="images/banner-main.jpg" alt="Баннер с кроссовками">
+        </div>
+        <div class="category-grid">
+          <div class="category-item">
+            <img src="images/category-food.jpg" alt="Продукты Питания">
+            <span>Продукты Питания</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-meal.jpg" alt="Готовая еда">
+            <span>Готовая еда</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-clothes.jpg" alt="Одежда">
+            <span>Одежда</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-beauty.jpg" alt="Красота и здоровье">
+            <span>Красота и здоровье</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-toys.jpg" alt="Детские товары">
+            <span>Детские товары</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-home.jpg" alt="Дом и сад">
+            <span>Дом и сад</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-furniture.jpg" alt="Мебель">
+            <span>Мебель</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-fishing.jpg" alt="Рыбалка Охота">
+            <span>Рыбалка Охота</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-office.jpg" alt="Канцелярские товары">
+            <span>Канцелярские товары</span>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 
