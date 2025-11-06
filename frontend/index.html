@@ -2,42 +2,246 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ЦУИМ — Местный маркетплейс</title>
-  <link rel="stylesheet" href="../css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ЦУИМ — Локальное — быстро и удобно</title>
+  <style>
+    :root {
+      --orange: #FF6F00;
+      --blue: #1A237E;
+      --light: #ffffff;
+      --gray: #f5f5f5;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background-color: var(--light);
+    }
+
+    header {
+      background: var(--blue);
+      color: white;
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+
+    .auth-buttons button {
+      background: transparent;
+      border: 1px solid white;
+      color: white;
+      padding: 8px 16px;
+      margin-left: 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 60px 20px;
+      background: var(--gray);
+    }
+
+    .hero h1 {
+      font-size: 2.4rem;
+      color: var(--blue);
+      margin-bottom: 16px;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      color: #444;
+      max-width: 700px;
+      margin: 0 auto 32px;
+    }
+
+    .btn {
+      display: inline-block;
+      background: var(--orange);
+      color: white;
+      padding: 12px 32px;
+      border-radius: 8px;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background: #e05a00;
+    }
+
+    .categories {
+      padding: 40px 20px;
+      text-align: center;
+    }
+
+    .categories h2 {
+      color: var(--blue);
+      margin-bottom: 32px;
+    }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .category {
+      padding: 16px;
+      border: 1px solid #eee;
+      border-radius: 8px;
+    }
+
+    .features {
+      padding: 40px 20px;
+      background: var(--gray);
+    }
+
+    .features h2 {
+      text-align: center;
+      color: var(--blue);
+      margin-bottom: 32px;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 24px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .feature {
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .feature h3 {
+      color: var(--orange);
+      margin-bottom: 12px;
+    }
+
+    .seller-form {
+      padding: 60px 20px;
+      text-align: center;
+      background: var(--blue);
+      color: white;
+    }
+
+    .seller-form h2 {
+      margin-bottom: 24px;
+    }
+
+    .form-inputs {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .form-inputs input {
+      padding: 12px;
+      border: none;
+      border-radius: 6px;
+      width: 300px;
+      font-size: 1rem;
+    }
+
+    footer {
+      background: #333;
+      color: white;
+      padding: 32px 20px;
+      text-align: center;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 600px) {
+      .form-inputs {
+        flex-direction: column;
+        align-items: center;
+      }
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
 </head>
 <body>
-  <header>
-    <div class="logo">ЦУИМ</div>
-    <nav><a href="#" id="terms-link">Пользовательское соглашение</a></nav>
-  </header>
 
-  <section class="hero">
-    <h1>ЦУИМ — свежее из Барнаула, за 2 часа</h1>
-    <p>Продукты только с доставкой. Ремесленные товары — можно забрать в ПВЗ.</p>
-    <a href="#" class="btn">Выбрать товары</a>
-  </section>
+<header>
+  <div class="logo">ЦУИМ</div>
+  <div class="auth-buttons">
+    <button>Войти</button>
+    <button>Регистрация</button>
+  </div>
+</header>
 
-  <section class="section">
-    <h2>Как это работает</h2>
-    <ul>
-      <li>Минималка — 1500 ₽. Меньше — +150 ₽ за доставку.</li>
-      <li>Еда, молоко, цветы — только курьером.</li>
-      <li>Свечи, керамика, открытки — можно в пункт выдачи.</li>
-    </ul>
-  </section>
+<section class="hero">
+  <h1>Локальное — быстро и удобно</h1>
+  <p>Закажите свежую выпечку, молоко от фермера или цветы — и получите всё в течение 2 часов по Барнаулу.</p>
+  <a href="#order" class="btn">Сделать заказ</a>
+</section>
 
-  <footer>
-    <p>© 2025 ЦУИМ. <a href="#" id="terms-link-footer">Пользовательское соглашение</a></p>
-  </footer>
+<section class="categories">
+  <h2>Популярные категории</h2>
+  <div class="category-grid">
+    <div class="category">Выпечка</div>
+    <div class="category">Молоко</div>
+    <div class="category">Цветы</div>
+    <div class="category">Книги</div>
+    <div class="category">Хозтовары</div>
+    <div class="category">Декор</div>
+  </div>
+</section>
 
-  <div id="termsModal" class="modal">
-    <div class="modal-content">
-      <span class="close" id="close-modal">&times;</span>
-      <iframe src="../docs/user-agreement.html" width="100%" height="500" frameborder="0"></iframe>
+<section class="features">
+  <h2>Почему выбирают ЦУИМ?</h2>
+  <div class="features-grid">
+    <div class="feature">
+      <h3>Только местные магазины</h3>
+      <p>Поддерживаем фермеров, пекарни и семейные лавки Барнаула.</p>
+    </div>
+    <div class="feature">
+      <h3>Доставка за 2 часа</h3>
+      <p>Не ждите 3 дня — получите свежее к утру или к обеду.</p>
+    </div>
+    <div class="feature">
+      <h3>Без минимальной суммы</h3>
+      <p>Закажите даже батон — доставим за 150 ₽.</p>
     </div>
   </div>
+</section>
 
-  <script src="../js/main.js"></script>
+<section class="seller-form" id="seller">
+  <h2>Вы — местный магазин?</h2>
+  <p>Подключайтесь к ЦУИМ и начните продавать онлайн за 1 день!</p>
+  <div class="form-inputs">
+    <input type="text" placeholder="Ваше имя" />
+    <input type="tel" placeholder="Телефон" />
+    <button class="btn">Отправить</button>
+  </div>
+</section>
+
+<footer>
+  <p>© 2025 ЦУИМ. Локальное — быстро и удобно.</p>
+  <p>ООО «ЦУИМ», ИНН 222..., ОГРН 123..., г. Барнаул, ул. Ленина, д. 1</p>
+  <p>support@cuim.ru | +7 (385) XXX-XX-XX</p>
+</footer>
+
 </body>
 </html>
