@@ -15,13 +15,34 @@
       <div class="logo">
         <img src="images/logo.svg" alt="ЦУИМ">
       </div>
+      <div class="catalog-btn">Каталог</div>
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Искать товары">
+        <select class="search-category">
+          <option value="">Везде</option>
+          <option value="food">Продукты</option>
+          <option value="flowers">Цветы</option>
+          <option value="candles">Свечи</option>
+        </select>
+        <input type="text" id="search-input" placeholder="Искать на ЦУИМ">
         <button type="submit">🔍</button>
       </div>
-      <div class="header-actions">
-        <a href="#" class="profile">👤 Мой профиль</a>
-        <a href="#" class="cart">🛒 Корзина (0)</a>
+      <div class="header-icons">
+        <a href="#" class="icon-link">
+          <img src="images/icon-login.png" alt="Войти">
+          <span>Войти</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="images/icon-orders.png" alt="Заказы">
+          <span>Заказы</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="images/icon-favorites.png" alt="Избранное">
+          <span>Избранное</span>
+        </a>
+        <a href="#" class="icon-link cart-icon">
+          <img src="images/icon-cart.png" alt="Корзина">
+          <span>Корзина (0)</span>
+        </a>
       </div>
     </div>
   </header>
@@ -112,13 +133,6 @@
   <!-- Подвал -->
   <footer class="footer">
     <div class="container">
-      <div class="footer-links">
-        <a href="#">Стать продавцом</a>
-        <a href="#">Пункты самовывоза</a>
-        <a href="#">Информация</a>
-        <a href="#">Мой профиль</a>
-        <a href="#">Корзина (0)</a>
-      </div>
       <p>© 2025 ЦУИМ. <a href="docs/user-agreement.html" target="_blank">Пользовательское соглашение</a></p>
     </div>
   </footer>
