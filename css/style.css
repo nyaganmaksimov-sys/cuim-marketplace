@@ -56,6 +56,12 @@ body {
   height: 40px;
   object-fit: contain;
 }
+.search-container {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 .catalog-btn {
   background: var(--blue);
   color: white;
@@ -96,9 +102,18 @@ body {
   cursor: pointer;
   font-size: 16px;
 }
+
+/* Иконки под поиском */
 .header-icons {
+  background: white;
+  padding: 12px 0;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.header-icons .container {
   display: flex;
-  gap: 20px;
+  justify-content: center;
+  gap: 30px;
 }
 .icon-link {
   display: flex;
@@ -224,14 +239,18 @@ body {
     flex-direction: column;
     gap: 12px;
   }
+  .search-container {
+    width: 100%;
+    flex-direction: column;
+  }
   .search-box {
     width: 100%;
   }
+  .header-icons .container {
+    flex-wrap: wrap;
+    gap: 20px;
+  }
   .product-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  }
-  .header-icons {
-    flex-wrap: wrap;
-    justify-content: center;
   }
 }
