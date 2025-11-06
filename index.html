@@ -3,81 +3,140 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ЦУИМ</title>
-  <style>
-    .header {
-      display: flex;
-      align-items: center;
-      padding: 12px 20px;
-      background: white;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      gap: 20px;
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #FF6F00;
-    }
-    .search-box {
-      flex: 1;
-      display: flex;
-      border: 2px solid #0D47A1;
-      border-radius: 24px;
-      overflow: hidden;
-    }
-    .search-box select, .search-box input {
-      border: none;
-      padding: 10px;
-      font-size: 16px;
-      outline: none;
-    }
-    .search-box input {
-      flex: 1;
-    }
-    .search-box button {
-      background: #0D47A1;
-      color: white;
-      border: none;
-      padding: 0 16px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-    .header-icons {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .icon-link {
-      text-decoration: none;
-      color: #222;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-  </style>
+  <title>ЦУИМ — Местный маркетплейс Барнаула</title>
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📦</text></svg>">
 </head>
 <body>
 
+  <!-- Шапка -->
   <header class="header">
-    <div class="logo">ЦУИМ</div>
-    <div class="search-box">
-      <select><option>Везде</option></select>
-      <input type="text" placeholder="Искать на ЦУИМ">
-      <button>🔍</button>
-    </div>
-    <div class="header-icons">
-      <a href="#" class="icon-link">👤 Войти</a>
-      <a href="#" class="icon-link">📦 Заказы</a>
-      <a href="#" class="icon-link">❤️ Избранное</a>
-      <a href="#" class="icon-link">🛒 Корзина (0)</a>
+    <div class="container">
+      <div class="logo">
+        <img src="images/logo.svg" alt="ЦУИМ">
+      </div>
+      <div class="catalog-btn">Каталог</div>
+      <div class="search-box">
+        <select class="search-category">
+          <option value="">Везде</option>
+          <option value="food">Продукты</option>
+          <option value="flowers">Цветы</option>
+          <option value="candles">Свечи</option>
+        </select>
+        <input type="text" id="search-input" placeholder="Искать на ЦУИМ">
+        <button type="submit">🔍</button>
+      </div>
+      <div class="header-icons">
+        <a href="#" class="icon-link">
+          <img src="images/icon-login.png" alt="Войти">
+          <span>Войти</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="images/icon-orders.png" alt="Заказы">
+          <span>Заказы</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="images/icon-favorites.png" alt="Избранное">
+          <span>Избранное</span>
+        </a>
+        <a href="#" class="icon-link cart-icon">
+          <img src="images/icon-cart.png" alt="Корзина">
+          <span>Корзина (0)</span>
+        </a>
+      </div>
     </div>
   </header>
 
-  <div style="padding: 20px;">
-    <h2>Если вы видите эту страницу — всё работает.</h2>
-    <p>Теперь можно добавлять баннеры и категории.</p>
+  <!-- Меню категорий -->
+  <nav class="category-menu">
+    <div class="container">
+      <a href="#" class="menu-item active">Все товары</a>
+      <a href="#" class="menu-item">Торговые центры</a>
+      <a href="#" class="menu-item">Продавцы</a>
+      <a href="#" class="menu-item">Услуги (beta)</a>
+      <a href="#" class="menu-item">Новинки</a>
+      <a href="#" class="menu-item">Хиты продаж</a>
+      <a href="#" class="menu-item">Оплата и доставка</a>
+    </div>
+  </nav>
+
+  <!-- Главный блок: баннер + категории -->
+  <section class="main-content">
+    <div class="container">
+      <div class="banner-section">
+        <div class="banner-image">
+          <img src="images/banner-main.jpg" alt="Баннер">
+        </div>
+        <div class="category-grid">
+          <div class="category-item">
+            <img src="images/category-food.png" alt="Продукты Питания">
+            <span>Продукты Питания</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-meal.png" alt="Готовая еда">
+            <span>Готовая еда</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-clothes.png" alt="Одежда">
+            <span>Одежда</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-beauty.png" alt="Красота и здоровье">
+            <span>Красота и здоровье</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-toys.png" alt="Детские товары">
+            <span>Детские товары</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-home.png" alt="Дом и сад">
+            <span>Дом и сад</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-furniture.png" alt="Мебель">
+            <span>Мебель</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-fishing.png" alt="Рыбалка Охота">
+            <span>Рыбалка Охота</span>
+          </div>
+          <div class="category-item">
+            <img src="images/category-office.png" alt="Канцелярские товары">
+            <span>Канцелярские товары</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Инфо-баннер -->
+  <div class="info-banner delivery-mode" id="mode-banner">
+    🚚 Продукты — только с доставкой. Минимальный заказ: 1500 ₽.
   </div>
 
+  <!-- Блок товаров -->
+  <section class="products-section">
+    <div class="container">
+      <h2>Новинки</h2>
+      <div class="product-grid" id="product-grid"></div>
+
+      <h2>Детская одежда</h2>
+      <div class="product-grid" id="kids-grid"></div>
+    </div>
+  </section>
+
+  <!-- Минимальная сумма -->
+  <div class="min-order-warning" id="min-warning">
+    ⚠️ Минимальная сумма заказа — 1500 ₽. Добавьте ещё на <span id="short-amount">1500</span> ₽.
+  </div>
+
+  <!-- Подвал -->
+  <footer class="footer">
+    <div class="container">
+      <p>© 2025 ЦУИМ. <a href="docs/user-agreement.html" target="_blank">Пользовательское соглашение</a></p>
+    </div>
+  </footer>
+
+  <script src="js/main.js"></script>
 </body>
 </html>
