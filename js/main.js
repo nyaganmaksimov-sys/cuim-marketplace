@@ -1,45 +1,53 @@
-// Данные товаров (в реальном проекте — из API)
+// Данные товаров (в будущем — из API)
 const products = [
-  { id: 1, name: "Молоко 1л", price: 95, category: "food", deliveryOnly: true },
-  { id: 2, name: "Букет 'Солнце'", price: 850, category: "flowers", deliveryOnly: true },
-  { id: 3, name: "Аромасвеча 'Лес'", price: 450, category: "candles", deliveryOnly: false },
-  { id: 4, name: "Керамическая кружка", price: 600, category: "craft", deliveryOnly: false },
-  { id: 5, name: "Багет фермерский", price: 120, category: "bread", deliveryOnly: true },
-  { id: 6, name: "Мыло ручной работы", price: 220, category: "craft", deliveryOnly: false },
+  { id: 1, name: "Молоко фермерское, 1л", price: 95, category: "food", deliveryOnly: true },
+  { id: 2, name: "Букет 'Солнечный день'", price: 850, category: "flowers", deliveryOnly: true },
+  { id: 3, name: "Аромасвеча 'Сосна и дым'", price: 450, category: "candles", deliveryOnly: false },
+  { id: 4, name: "Керамическая кружка ручной работы", price: 600, category: "craft", deliveryOnly: false },
+  { id: 5, name: "Фермерский багет", price: 120, category: "bread", deliveryOnly: true },
+  { id: 6, name: "Мыло 'Лаванда и мёд'", price: 220, category: "craft", deliveryOnly: false },
+  { id: 7, name: "Сыр 'Алтайский', 200г", price: 320, category: "food", deliveryOnly: true },
+  { id: 8, name: "Декоративная подушка", price: 750, category: "craft", deliveryOnly: false },
 ];
 
-let currentMode = 'delivery'; // или 'pickup'
+let currentMode = 'delivery'; // 'delivery' или 'pickup'
+let currentCategory = 'all';
 
-function renderProducts(categoryFilter = null) {
+function renderProducts() {
   const container = document.getElementById('products-list');
   container.innerHTML = '';
 
   const filtered = products.filter(p => {
-    // Если ПВЗ — исключаем товары только для доставки
     if (currentMode === 'pickup' && p.deliveryOnly) return false;
-    if (categoryFilter && p.category !== categoryFilter) return false;
+    if (currentCategory !== 'all' && p.category !== currentCategory) return false;
     return true;
   });
 
   if (filtered.length === 0) {
-    container.innerHTML = '<p>В этом режиме товаров нет.</p>';
+    container.innerHTML = '<p style="grid-column:1/-1; text-align:center; color:#888;">Нет товаров по выбранным условиям</p>';
     return;
   }
 
   filtered.forEach(p => {
     const card = document.createElement('div');
     card.className = 'product-card';
+    const emoji = p.category === 'food' ? '🥛' : 
+                  p.category === 'flowers' ? '💐' : 
+                  p.category === 'candles' ? '🕯' : 
+                  p.category === 'bread' ? '🍞' : '🎨';
     card.innerHTML = `
-      <div class="product-image">🥛</div>
+      <div class="product-image">${emoji}</div>
       <div class="product-name">${p.name}</div>
       <div class="product-price">${p.price} ₽</div>
-      ${p.deliveryOnly ? '<span class="badge delivery">Только доставка</span>' : '<span class="badge pickup">Можно в ПВЗ</span>'}
+      ${p.deliveryOnly 
+        ? '<span class="badge delivery">Только доставка</span>' 
+        : '<span class="badge pickup">Можно в ПВЗ</span>'}
     `;
     container.appendChild(card);
   });
 }
 
-// Переключение режима
+// Переключение режима доставки/ПВЗ
 document.querySelectorAll('.delivery-type').forEach(btn => {
   btn.addEventListener('click', (e) => {
     e.preventDefault();
@@ -47,7 +55,6 @@ document.querySelectorAll('.delivery-type').forEach(btn => {
     btn.classList.add('active');
     currentMode = btn.dataset.type;
     
-    // Меняем баннер
     const banner = document.querySelector('.info-banner');
     banner.className = 'info-banner ' + (currentMode === 'pickup' ? 'pickup-mode' : 'delivery-mode');
     
@@ -55,12 +62,18 @@ document.querySelectorAll('.delivery-type').forEach(btn => {
   });
 });
 
-// Категории
+// Переключение категории
 document.querySelectorAll('.category').forEach(cat => {
   cat.addEventListener('click', () => {
-    renderProducts(cat.dataset.category);
+    document.querySelectorAll('.category').forEach(c => c.classList.remove('active'));
+    cat.classList.add('active');
+    currentCategory = cat.dataset.category;
+    renderProducts();
   });
 });
+
+// Активируем "Все" по умолчанию
+document.querySelector('.category[data-category="all"]').classList.add('active');
 
 // Инициализация
 renderProducts();
