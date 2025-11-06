@@ -9,31 +9,69 @@
 </head>
 <body>
 
-  <!-- Инфо-панель -->
-  <div class="info-banner delivery-mode" id="mode-banner">
-    🚚 Продукты — только с доставкой. Минимальный заказ: 1500 ₽.
-  </div>
+  <!-- Верхняя панель -->
+  <header class="top-bar">
+    <div class="container">
+      <nav class="top-nav">
+        <a href="#">Стать продавцом</a>
+        <a href="#">Пункты самовывоза</a>
+        <a href="#">Информация</a>
+      </nav>
+      <div class="user-actions">
+        <a href="#" class="profile">👤 Мой профиль</a>
+        <a href="#" class="cart">🛒 Корзина (0)</a>
+      </div>
+    </div>
+  </header>
 
   <!-- Шапка -->
   <header class="header">
     <div class="container">
-      <div class="logo">ЦУИМ</div>
-      <div class="search-box">
-        <input type="text" id="search-input" placeholder="Искать товары...">
+      <div class="logo">
+        <img src="images/logo.svg" alt="ЦУИМ" width="120">
       </div>
-      <a href="#" class="cart" id="cart-button">🛒 Корзина: <span id="cart-total">0 ₽</span></a>
+      <div class="catalog-btn">Каталог</div>
+      <div class="search-box">
+        <select class="search-category">
+          <option value="">Везде</option>
+          <option value="food">Продукты</option>
+          <option value="flowers">Цветы</option>
+          <option value="candles">Свечи</option>
+        </select>
+        <input type="text" id="search-input" placeholder="Искать на ЦУИМ">
+        <button type="submit">🔍</button>
+      </div>
+      <div class="header-icons">
+        <a href="#" class="icon-link">
+          <img src="https://via.placeholder.com/32?text=👤" alt="Войти">
+          <span>Войти</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="https://via.placeholder.com/32?text=📦" alt="Заказы">
+          <span>Заказы</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="https://via.placeholder.com/32?text=❤️" alt="Избранное">
+          <span>Избранное</span>
+        </a>
+        <a href="#" class="icon-link cart-icon">
+          <img src="https://via.placeholder.com/32?text=🛒" alt="Корзина">
+          <span>Корзина (0)</span>
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- Переключатель доставки -->
-  <div class="delivery-toggle">
+  <!-- Главный баннер -->
+  <section class="main-banner">
     <div class="container">
-      <label class="switch">
-        <input type="checkbox" id="delivery-toggle">
-        <span class="slider"></span>
-      </label>
-      <span id="delivery-label">📦 Доставка</span>
+      <img src="images/banner-main.jpg" alt="Главный баннер" class="banner-image">
     </div>
+  </section>
+
+  <!-- Информационный баннер -->
+  <div class="info-banner delivery-mode" id="mode-banner">
+    🚚 Продукты — только с доставкой. Минимальный заказ: 1500 ₽.
   </div>
 
   <!-- Блок товаров -->
