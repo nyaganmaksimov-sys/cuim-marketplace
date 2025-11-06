@@ -9,218 +9,58 @@
 </head>
 <body>
 
-  <!-- Верхняя панель -->
-  <header class="top-bar">
-    <div class="container">
-      <nav class="top-nav">
-        <a href="#">Стать продавцом</a>
-        <a href="#">Пункты самовывоза</a>
-        <a href="#">Информация</a>
-      </nav>
-      <div class="user-actions">
-        <a href="#" class="profile">👤 Мой профиль</a>
-        <a href="#" class="cart">🛒 Корзина пуста</a>
-      </div>
-    </div>
-  </header>
+  <!-- Инфо-панель -->
+  <div class="info-banner delivery-mode" id="mode-banner">
+    🚚 Продукты — только с доставкой. Минимальный заказ: 1500 ₽.
+  </div>
 
   <!-- Шапка -->
   <header class="header">
     <div class="container">
       <div class="logo">ЦУИМ</div>
       <div class="search-box">
-        <input type="text" id="search-input" placeholder="Искать товары">
-        <button type="submit">🔍</button>
+        <input type="text" id="search-input" placeholder="Искать товары...">
       </div>
+      <a href="#" class="cart" id="cart-button">🛒 Корзина: <span id="cart-total">0 ₽</span></a>
     </div>
   </header>
 
-  <!-- Меню категорий -->
-  <nav class="category-menu">
+  <!-- Переключатель доставки -->
+  <div class="delivery-toggle">
     <div class="container">
-      <a href="#" class="menu-item active">Все товары</a>
-      <a href="#" class="menu-item">Торговые центры</a>
-      <a href="#" class="menu-item">Продавцы</a>
-      <a href="#" class="menu-item">Услуги(beta)</a>
-      <a href="#" class="menu-item">Новинки</a>
-      <a href="#" class="menu-item">Хиты продаж</a>
-      <a href="#" class="menu-item">Оплата и доставка</a>
+      <label class="switch">
+        <input type="checkbox" id="delivery-toggle">
+        <span class="slider"></span>
+      </label>
+      <span id="delivery-label">📦 Доставка</span>
     </div>
-  </nav>
-
-  <!-- Главный баннер -->
-  <section class="main-banner">
-    <div class="container">
-      <img src="https://via.placeholder.com/600x300?text=Баннер+товара" alt="Баннер" class="banner-image">
-    </div>
-  </section>
-
-  <!-- Рекомендованные продавцы -->
-  <section class="sellers-section">
-    <div class="container">
-      <h2>Рекомендованные продавцы</h2>
-      <div class="sellers-list">
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=Sai-Ayurveda" alt="Sai-Ayurveda"></div>
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=SE+STORE" alt="SE STORE"></div>
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=Авто+Технологии" alt="Авто Технологии"></div>
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=ГРАНД+МЕБЕЛЬ" alt="ГРАНД МЕБЕЛЬ"></div>
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=ЗВУК" alt="ЗВУК"></div>
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=Caramel" alt="Caramel"></div>
-        <div class="seller-item"><img src="https://via.placeholder.com/100x50?text=Risalat" alt="Risalat"></div>
-      </div>
-    </div>
-  </section>
+  </div>
 
   <!-- Блок товаров -->
   <section class="products-section">
     <div class="container">
 
-      <!-- Рекламные места -->
-      <div class="ad-spots">
-        <div class="ad-spot">
-          <img src="https://via.placeholder.com/550x700?text=Рекламное+место+550x700" alt="Реклама">
-          <span class="ad-number">1</span>
-        </div>
-        <div class="product-grid">
-          <div class="product-card">
-            <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-            <h3>Погремушка Вертушка</h3>
-            <div class="price">
-              <span class="old-price">59.00 ₽</span>
-              <span class="new-price">29.00 ₽</span>
-            </div>
-            <button class="add-to-cart">В КОРЗИНУ</button>
-            <p class="buy-one-click">Купить в один клик</p>
-          </div>
-          <div class="product-card">
-            <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-            <h3>Бубен MAREK большой</h3>
-            <div class="price">
-              <span class="old-price">450.00 ₽</span>
-              <span class="new-price">159.00 ₽</span>
-            </div>
-            <button class="add-to-cart">В КОРЗИНУ</button>
-            <p class="buy-one-click">Купить в один клик</p>
-          </div>
-        </div>
-        <div class="ad-spot">
-          <img src="https://via.placeholder.com/550x700?text=Рекламное+место+550x700" alt="Реклама">
-          <div class="chat-icon">💬</div>
-        </div>
-      </div>
-
-      <!-- Новинки -->
       <h2>Новинки</h2>
-      <p class="note">*В блоке Новинки товары размещаются автоматически, согласно последним добавленным товарам от всех продавцов маркетплейса.</p>
-      <div class="product-grid">
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Язык говяжий холодного копчения</h3>
-          <div class="price">
-            <span class="new-price">1 900.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Пивчики в вакууме 90 гр.</h3>
-          <div class="price">
-            <span class="new-price">350.00 ₽</span>
-          </div>
-          <button class="add-to-cart">ВЫБЕРИТЕ ВАРИАЦИЮ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Креветки Аргентинские в вакууме</h3>
-          <div class="price">
-            <span class="new-price">450.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Пивчики в ассортименте 100 гр.</h3>
-          <div class="price">
-            <span class="new-price">210.00 ₽</span>
-          </div>
-          <button class="add-to-cart">ВЫБЕРИТЕ ВАРИАЦИЮ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>ROYAL BROWN HENNA ("РОЯЛ...")</h3>
-          <div class="price">
-            <span class="new-price">649.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
+      <div class="product-grid" id="product-grid">
+        <!-- Товары загружаются из JS -->
       </div>
 
-      <!-- Детская одежда -->
       <h2>Детская одежда</h2>
-      <div class="product-grid">
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Комплект на выпускку</h3>
-          <div class="price">
-            <span class="old-price">4 000.00 ₽</span>
-            <span class="new-price">3 799.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Куртка-парка демисезонная...</h3>
-          <div class="price">
-            <span class="old-price">5 299.00 ₽</span>
-            <span class="new-price">4 239.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Куртка-парка Crockid демисезонная</h3>
-          <div class="price">
-            <span class="old-price">4 199.00 ₽</span>
-            <span class="new-price">3 359.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Куртка демисезонная Crockid</h3>
-          <div class="price">
-            <span class="old-price">4 999.00 ₽</span>
-            <span class="new-price">3 999.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
-        <div class="product-card">
-          <img src="https://via.placeholder.com/200x200?text=Товар" alt="Товар">
-          <h3>Комбинезон Crockid Демисезонный</h3>
-          <div class="price">
-            <span class="old-price">4 599.00 ₽</span>
-            <span class="new-price">3 679.00 ₽</span>
-          </div>
-          <button class="add-to-cart">В КОРЗИНУ</button>
-          <p class="buy-one-click">Купить в один клик</p>
-        </div>
+      <div class="product-grid" id="kids-grid">
+        <!-- Детские товары -->
       </div>
 
     </div>
   </section>
 
+  <!-- Минимальная сумма -->
+  <div class="min-order-warning" id="min-warning">
+    ⚠️ Минимальная сумма заказа — 1500 ₽. Добавьте ещё на <span id="short-amount">1500</span> ₽.
+  </div>
+
   <footer class="footer">
     <div class="container">
-      <p>© 2025 ЦУИМ. Пользовательское соглашение</p>
+      <p>© 2025 ЦУИМ. <a href="docs/user-agreement.html" target="_blank">Пользовательское соглашение</a></p>
     </div>
   </footer>
 
