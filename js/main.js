@@ -1,4 +1,4 @@
-// Данные товаров (в будущем — из API)
+// Данные товаров (в будущем — из API или CMS)
 const products = [
   { id: 1, name: "Молоко фермерское, 1л", price: 95, category: "food", deliveryOnly: true },
   { id: 2, name: "Букет 'Солнечный день'", price: 850, category: "flowers", deliveryOnly: true },
@@ -8,10 +8,15 @@ const products = [
   { id: 6, name: "Мыло 'Лаванда и мёд'", price: 220, category: "craft", deliveryOnly: false },
   { id: 7, name: "Сыр 'Алтайский', 200г", price: 320, category: "food", deliveryOnly: true },
   { id: 8, name: "Декоративная подушка", price: 750, category: "craft", deliveryOnly: false },
+  { id: 9, name: "Огурцы свежие, 1кг", price: 140, category: "food", deliveryOnly: true },
+  { id: 10, name: "Розы красные, 5 шт", price: 450, category: "flowers", deliveryOnly: true },
+  { id: 11, name: "Свеча 'Ваниль и корица'", price: 380, category: "candles", deliveryOnly: false },
+  { id: 12, name: "Хлеб 'Ржаной с тмином'", price: 90, category: "bread", deliveryOnly: true }
 ];
 
 let currentMode = 'delivery'; // 'delivery' или 'pickup'
 let currentCategory = 'all';
+let searchTerm = '';
 
 function renderProducts() {
   const container = document.getElementById('products-list');
@@ -20,6 +25,7 @@ function renderProducts() {
   const filtered = products.filter(p => {
     if (currentMode === 'pickup' && p.deliveryOnly) return false;
     if (currentCategory !== 'all' && p.category !== currentCategory) return false;
+    if (searchTerm && !p.name.toLowerCase().includes(searchTerm.toLowerCase())) return false;
     return true;
   });
 
@@ -47,6 +53,12 @@ function renderProducts() {
   });
 }
 
+// Поиск
+document.getElementById('search-input').addEventListener('input', (e) => {
+  searchTerm = e.target.value.trim();
+  renderProducts();
+});
+
 // Переключение режима доставки/ПВЗ
 document.querySelectorAll('.delivery-type').forEach(btn => {
   btn.addEventListener('click', (e) => {
@@ -72,8 +84,5 @@ document.querySelectorAll('.category').forEach(cat => {
   });
 });
 
-// Активируем "Все" по умолчанию
-document.querySelector('.category[data-category="all"]').classList.add('active');
-
 // Инициализация
-renderProducts();
+render
