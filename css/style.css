@@ -1,10 +1,8 @@
 :root {
   --orange: #FF6F00;
   --blue: #0D47A1;
-  --light-bg: #fafafa;
   --border: #e0e0e0;
   --text: #222;
-  --white: #fff;
 }
 
 * {
@@ -15,7 +13,7 @@
 }
 
 body {
-  background: white;
+  background: #fff;
   color: var(--text);
   line-height: 1.5;
 }
@@ -46,7 +44,7 @@ body {
 
 /* Шапка */
 .header {
-  background: white;
+  background: #fff;
   padding: 16px 0;
   display: flex;
   align-items: center;
@@ -54,6 +52,7 @@ body {
 }
 .logo img {
   height: 40px;
+  width: auto;
   object-fit: contain;
 }
 .search-box {
@@ -101,7 +100,7 @@ body {
   color: white;
 }
 
-/* Главный блок: баннер + категории */
+/* Главный блок */
 .main-content {
   margin: 20px 0;
 }
@@ -112,8 +111,8 @@ body {
 }
 .banner-image {
   flex: 1;
-  overflow: hidden;
   border-radius: 8px;
+  overflow: hidden;
 }
 .banner-image img {
   width: 100%;
@@ -141,14 +140,13 @@ body {
 .category-item img {
   width: 60px;
   height: 60px;
-  margin-bottom: 5px;
   object-fit: contain;
+  margin-bottom: 6px;
 }
 .category-item span {
   font-size: 12px;
-  margin-top: 5px;
-  text-align: center;
   line-height: 1.2;
+  text-align: center;
 }
 
 /* Инфо-баннер */
@@ -217,7 +215,7 @@ body {
   margin-top: 6px;
 }
 
-/* Минимальный заказ */
+/* Минимальная сумма */
 .min-order-warning {
   background: #ffebee;
   color: #c62828;
@@ -254,6 +252,10 @@ body {
   .category-grid {
     width: 100%;
     grid-template-columns: repeat(2, 1fr);
+  }
+  .category-item img {
+    width: 60px;
+    height: 60px;
   }
   .product-grid {
     grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
