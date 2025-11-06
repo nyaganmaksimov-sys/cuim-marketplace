@@ -4,131 +4,61 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>ЦУИМ — Местный маркетплейс Барнаула</title>
-  <!-- Минимальные стили — только для шапки -->
-  <style>
-    .header {
-      background: white;
-      padding: 16px 20px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-    }
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-      color: #FF6F00;
-    }
-    .search-box {
-      flex: 1;
-      display: flex;
-      border: 2px solid #0D47A1;
-      border-radius: 24px;
-      overflow: hidden;
-    }
-    .search-category {
-      padding: 8px 12px;
-      border: none;
-      background: transparent;
-      font-size: 14px;
-      outline: none;
-    }
-    #search-input {
-      flex: 1;
-      padding: 8px 12px;
-      border: none;
-      font-size: 16px;
-      outline: none;
-    }
-    .search-box button {
-      background: #0D47A1;
-      color: white;
-      border: none;
-      padding: 8px 16px;
-      cursor: pointer;
-      font-size: 16px;
-    }
-    .header-icons {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-    }
-    .icon-link {
-      text-decoration: none;
-      color: #222;
-      font-size: 14px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-    .icon-link img {
-      width: 32px;
-      height: 32px;
-    }
-  </style>
+  <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
   <!-- Шапка -->
   <header class="header">
-    <div class="logo">ЦУИМ</div>
-    <div class="catalog-btn">Каталог</div>
-    <div class="search-box">
-      <select class="search-category">
-        <option value="">Везде</option>
-        <option value="food">Продукты</option>
-        <option value="flowers">Цветы</option>
-        <option value="candles">Свечи</option>
-      </select>
-      <input type="text" id="search-input" placeholder="Искать на ЦУИМ">
-      <button type="submit">🔍</button>
-    </div>
-    <div class="header-icons">
-      <a href="#" class="icon-link">
-        <img src="images/icon-login.png" alt="Войти">
-        <span>Войти</span>
-      </a>
-      <a href="#" class="icon-link">
-        <img src="images/icon-orders.png" alt="Заказы">
-        <span>Заказы</span>
-      </a>
-      <a href="#" class="icon-link">
-        <img src="images/icon-favorites.png" alt="Избранное">
-        <span>Избранное</span>
-      </a>
-      <a href="#" class="icon-link cart-icon">
-        <img src="images/icon-cart.png" alt="Корзина">
-        <span>Корзина (0)</span>
-      </a>
+    <div class="container">
+      <div class="logo">ЦУИМ</div>
+
+      <!-- Каталог с выпадающим меню -->
+      <div class="catalog-dropdown">
+        <button class="catalog-btn">Каталог</button>
+        <div class="catalog-menu">
+          <a href="#">Продукты Питания</a>
+          <a href="#">Готовая еда</a>
+          <a href="#">Одежда</a>
+          <a href="#">Красота и здоровье</a>
+          <a href="#">Детские товары</a>
+          <a href="#">Дом и сад</a>
+          <a href="#">Мебель</a>
+          <a href="#">Рыбалка и Охота</a>
+          <a href="#">Канцелярские товары</a>
+        </div>
+      </div>
+
+      <!-- Поисковая строка -->
+      <div class="search-box">
+        <input type="text" id="search-input" placeholder="Искать на ЦУИМ">
+        <button type="submit">🔍</button>
+      </div>
+
+      <!-- Иконки -->
+      <div class="header-icons">
+        <a href="#" class="icon-link">
+          <img src="images/icon-login.png" alt="Личный кабинет">
+          <span>Кабинет</span>
+        </a>
+        <a href="#" class="icon-link">
+          <img src="images/icon-favorites.png" alt="Избранное">
+          <span>Избранное</span>
+        </a>
+        <a href="#" class="icon-link cart-icon">
+          <img src="images/icon-cart.png" alt="Корзина">
+          <span>Корзина</span>
+        </a>
+      </div>
     </div>
   </header>
 
-  <!-- Меню категорий -->
-  <nav style="background: #f5f5f5; padding: 12px 0; margin: 12px 0; text-align: center;">
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Все товары</a>
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Торговые центры</a>
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Продавцы</a>
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Услуги (beta)</a>
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Новинки</a>
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Хиты продаж</a>
-    <a href="#" style="margin: 0 12px; text-decoration: none; color: #222;">Оплата и доставка</a>
-  </nav>
-
-  <!-- Главный блок -->
-  <section style="padding: 20px; text-align: center;">
-    <h2>Шапка работает!</h2>
-    <p>Теперь можно добавлять баннеры и категории.</p>
-  </section>
-
-  <!-- Инфо-баннер -->
-  <div style="background: #fff8e1; padding: 8px 0; text-align: center; font-size: 14px; color: #5d4037; border-bottom: 1px solid #e0e0e0;">
-    🚚 Продукты — только с доставкой. Минимальный заказ: 1500 ₽.
+  <!-- Просто заглушка, чтобы сайт не был пустым -->
+  <div style="padding: 40px; text-align: center;">
+    <h2>Шапка готова</h2>
+    <p>Теперь можно добавлять баннеры и товары.</p>
   </div>
 
-  <!-- Подвал -->
-  <footer style="margin-top: 40px; padding: 20px 0; text-align: center; color: #666; border-top: 1px solid #e0e0e0;">
-    © 2025 ЦУИМ. <a href="docs/user-agreement.html" target="_blank" style="color: #FF6F00;">Пользовательское соглашение</a>
-  </footer>
-
+  <script src="js/main.js"></script>
 </body>
 </html>
