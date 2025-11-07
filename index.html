@@ -2,42 +2,24 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>ЦУИМ — Работает</title>
+  <title>ЦУИМ</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #fff;
-      padding: 40px;
-    }
-    .logo {
-      font-size: 32px;
-      color: #FF6F00;
-      margin-bottom: 30px;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      background: #f9f9f9;
-      padding: 16px;
+    body { font-family: Arial, sans-serif; padding: 40px; background: #fff; }
+    .logo { font-size: 28px; color: #FF6F00; font-weight: bold; margin-bottom: 20px; }
+    .category-grid { display: flex; flex-wrap: wrap; gap: 15px; margin: 20px 0; }
+    .category-item {
+      background: #FF6F00;
+      color: white;
+      padding: 12px;
       border-radius: 8px;
-      margin-bottom: 30px;
+      text-align: center;
+      width: 120px;
     }
-    .search-box {
-      flex: 1;
-      display: flex;
-    }
-    .search-box input {
-      flex: 1;
-      padding: 8px 12px;
-      border: 2px solid #FF6F00;
-      border-radius: 20px;
-      outline: none;
-    }
-    .icons {
-      display: flex;
-      gap: 15px;
-      font-size: 14px;
+    .category-item img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      margin-bottom: 6px;
     }
   </style>
 </head>
@@ -45,20 +27,22 @@
 
   <div class="logo">ЦУИМ</div>
 
-  <div class="header">
-    <button style="background:#0D47A1;color:white;border:none;padding:6px 12px;border-radius:4px;">Каталог</button>
-    <div class="search-box">
-      <input type="text" placeholder="Искать на ЦУИМ">
+  <div class="category-grid">
+    <div class="category-item">
+      <img src="images/category-food.png" alt="Продукты Питания">
+      <div>Продукты Питания</div>
     </div>
-    <div class="icons">
-      👤 Кабинет<br>
-      ❤️ Избранное<br>
-      🛒 Корзина
+    <div class="category-item">
+      <img src="images/category-meal.png" alt="Готовая еда">
+      <div>Готовая еда</div>
+    </div>
+    <div class="category-item">
+      <img src="images/category-clothes.png" alt="Одежда">
+      <div>Одежда</div>
     </div>
   </div>
 
-  <p>✅ Если вы видите эту страницу — шапка работает!</p>
-  <p>Теперь можно добавлять категории и баннер.</p>
+  <p>✅ Если вы видите оранжевые карточки — HTML работает!</p>
 
 </body>
 </html>
