@@ -1,245 +1,58 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ЦУИМ — Местный маркетплейс Барнаула</title>
+  <meta charset="UTF-8">
+  <title>ЦУИМ — Работает</title>
   <style>
-    :root {
-      --orange: #FF6F00;
-      --blue: #0D47A1;
-      --border: #e0e0e0;
-    }
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    }
     body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
       background: white;
       color: #222;
-      line-height: 1.5;
     }
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 0 16px;
-    }
-
-    /* Шапка */
     .header {
-      background: white;
-      padding: 16px 0;
       display: flex;
       align-items: center;
       gap: 20px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      background: #f9f9f9;
+      padding: 16px;
+      border-radius: 8px;
+      margin-bottom: 30px;
     }
     .logo {
       font-size: 24px;
       font-weight: bold;
-      color: var(--orange);
+      color: #FF6F00;
     }
-    .search-box {
-      flex: 1;
-      display: flex;
-    }
-    .search-box input {
+    .search input {
       flex: 1;
       padding: 8px 16px;
-      border: 2px solid var(--orange);
+      border: 2px solid #FF6F00;
       border-radius: 24px;
       outline: none;
-      font-size: 16px;
     }
-    .header-icons {
+    .icons {
       display: flex;
       gap: 20px;
       font-size: 14px;
-    }
-    .icon-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* Баннер + категории */
-    .banner-section {
-      margin: 30px 0;
-    }
-    .banner-content {
-      display: flex;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    .banner-image img {
-      width: 100%;
-      max-width: 800px;
-      height: auto;
-      border-radius: 8px;
-      display: block;
-    }
-    .category-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 10px;
-      width: 300px;
-    }
-    .category-item {
-      background: var(--orange);
-      color: white;
-      border-radius: 8px;
-      padding: 10px;
-      text-align: center;
-      height: 100px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .category-item img {
-      width: 60px;
-      height: 60px;
-      object-fit: contain;
-      margin-bottom: 6px;
-    }
-    .category-item span {
-      font-size: 12px;
-      line-height: 1.2;
-    }
-
-    /* Инфо-баннеры */
-    .info-banner {
-      background: #fff8e1;
-      padding: 10px 0;
-      text-align: center;
-      font-size: 14px;
-      color: #5d4037;
-      border-bottom: 1px solid var(--border);
-    }
-    .min-warning {
-      background: #ffebee;
-      color: #c62828;
-      text-align: center;
-      padding: 12px;
-      margin: 20px 0;
-    }
-
-    /* Подвал */
-    .footer {
-      margin-top: 40px;
-      padding: 20px 0;
-      text-align: center;
-      color: #666;
-      border-top: 1px solid var(--border);
-    }
-    .footer a {
-      color: var(--orange);
-      text-decoration: none;
-    }
-
-    /* Мобильная адаптация */
-    @media (max-width: 768px) {
-      .header {
-        flex-direction: column;
-        gap: 12px;
-      }
-      .search-box {
-        width: 100%;
-      }
-      .banner-content {
-        flex-direction: column;
-      }
-      .category-grid {
-        width: 100%;
-        grid-template-columns: repeat(2, 1fr);
-      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Шапка -->
-  <header class="header">
-    <div class="container">
-      <div class="logo">ЦУИМ</div>
-      <div class="search-box">
-        <input type="text" placeholder="Искать на ЦУИМ">
-      </div>
-      <div class="header-icons">
-        <a href="#" class="icon-item">👤<br>Кабинет</a>
-        <a href="#" class="icon-item">❤️<br>Избранное</a>
-        <a href="#" class="icon-item">🛒<br>Корзина</a>
-      </div>
+  <div class="header">
+    <div class="logo">ЦУИМ</div>
+    <div class="search">
+      <input type="text" placeholder="Искать на ЦУИМ">
     </div>
-  </header>
-
-  <!-- Баннер + категории -->
-  <section class="banner-section">
-    <div class="container">
-      <div class="banner-content">
-        <div class="banner-image">
-          <img src="images/banner-main.jpg" alt="Баннер">
-        </div>
-        <div class="category-grid">
-          <div class="category-item">
-            <img src="images/category-food.png" alt="Продукты Питания">
-            <span>Продукты Питания</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-meal.png" alt="Готовая еда">
-            <span>Готовая еда</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-clothes.png" alt="Одежда">
-            <span>Одежда</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-beauty.png" alt="Красота и здоровье">
-            <span>Красота и здоровье</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-toys.png" alt="Детские товары">
-            <span>Детские товары</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-home.png" alt="Дом и сад">
-            <span>Дом и сад</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-furniture.png" alt="Мебель">
-            <span>Мебель</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-fishing.png" alt="Рыбалка Охота">
-            <span>Рыбалка Охота</span>
-          </div>
-          <div class="category-item">
-            <img src="images/category-office.png" alt="Канцелярские товары">
-            <span>Канцелярские товары</span>
-          </div>
-        </div>
-      </div>
+    <div class="icons">
+      👤 Кабинет<br>
+      ❤️ Избранное<br>
+      🛒 Корзина
     </div>
-  </section>
-
-  <!-- Инфо-баннеры -->
-  <div class="info-banner">
-    🚚 Продукты — только с доставкой. Минимальный заказ: 1500 ₽.
-  </div>
-  <div class="min-warning">
-    ⚠️ Минимальная сумма заказа — 1500 ₽. Добавьте ещё на 1500 ₽.
   </div>
 
-  <!-- Подвал -->
-  <footer class="footer">
-    <div class="container">
-      <p>© 2025 ЦУИМ. <a href="docs/user-agreement.html" target="_blank">Пользовательское соглашение</a></p>
-    </div>
-  </footer>
+  <p>✅ Если вы видите эту шапку — HTML работает!</p>
 
 </body>
 </html>
