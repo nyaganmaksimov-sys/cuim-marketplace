@@ -1,3 +1,4 @@
+import'/geo-core.js';
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/+esm';
 
 const s=createClient('https://qgakliolffnwkymoqvzn.supabase.co','sb_publishable_WbZxATu_lxqWF21jR_qFag_fcEeVIMu');
@@ -8,7 +9,8 @@ const order=['goods','services','jobs','food','auto','ads','events'];
 const typeLabel={PRODUCT:'Товар',SERVICE:'Услуга',JOB:'Работа',FOOD:'Еда',AUTO:'Авто',AD:'Объявление',EVENT:'Афиша'};
 const conditionLabel={NEW:'Новое',USED:'Б/у',REFURBISHED:'Восстановленное',OTHER:'Другое',SERVICE:'Сервис'};
 const adIcons={'ads-realestate':'🏠','ads-personal':'👕','ads-appliances':'🔌','ads-furniture':'🛋️','ads-animals':'🐾','ads-build':'🧰','ads-rent':'🔑','ads-buy':'🔎','ads-free':'🎁'};
-let currentSection='all',currentSub='',sections=[],subs=[],all=[],shown=[];
+const geoPin=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg>`;
+let currentSection='all',currentSub='',sections=[],subs=[],all=[],shown=[],geoContext=window.CUIM_GEO?.get?.()||null;
 const sectionCopy={
   all:['Все категории','Товары, услуги и предложения компаний и специалистов города в одном месте.'],
   goods:['Товары','Магазины, локальные продавцы и городские товары.'],
@@ -19,6 +21,18 @@ const sectionCopy={
   ads:['Доска объявлений','Покупайте, продавайте, арендуйте и отдавайте вещи в своём городе — просто и без лишних шагов.'],
   events:['Афиша','Концерты, события, выставки и городские мероприятия.']
 };
+
+function refreshGeoButton(){
+  const b=$('cityButton');if(!b)return;geoContext=window.CUIM_GEO?.get?.()||geoContext;
+  const area=geoContext?.area_short_name||geoContext?.area_name||'Город и район';
+  b.innerHTML=`${geoPin}<span><b>${esc(geoContext?.city_name||'Выбрать город')}</b><small>${esc(area)}</small></span>`;
+}
+function installGeoButton(){
+  const actions=document.querySelector('.top-actions');if(!actions)return;
+  let b=$('cityButton');if(!b){b=document.createElement('button');b.id='cityButton';b.type='button';b.className='btn light cuim-geo-trigger';actions.prepend(b)}
+  b.onclick=e=>{e.preventDefault();window.CUIM_GEO?.open?.()};refreshGeoButton();
+}
+function geoScopeText(){if(!geoContext?.city_name)return'';return geoContext.area_name?`${geoContext.city_name} · ${geoContext.area_short_name||geoContext.area_name}`:geoContext.city_name}
 
 function sectionByKey(k){return sections.find(x=>x.section_key===k)||null}
 function subByKey(k){return subs.find(x=>x.subcategory_key===k)||null}
@@ -50,15 +64,16 @@ function text(x){
   return[x.title,x.category,x.description,x.partner_name,typeLabel[x.marketplace_offer_type],x.city,...Object.values(d).filter(v=>typeof v==='string')].filter(Boolean).join(' ').toLowerCase();
 }
 function setMeta(){
-  const sec=activeSection(),sub=activeSub(),title=sub?.title||sec?.title||sectionCopy[currentSection]?.[0]||'Каталог';
+  const sec=activeSection(),sub=activeSub(),title=sub?.title||sec?.title||sectionCopy[currentSection]?.[0]||'Каталог',scope=geoScopeText();
   const desc=sub?`${sub.title}: актуальные предложения на городской доске и в маркетплейсе ЦУИМ.`:(sectionCopy[currentSection]?.[1]||sectionCopy.all[1]);
-  document.title=`${title} — ЦУИМ`;
-  document.querySelector('meta[name="description"]')?.setAttribute('content',desc);
+  document.title=`${title}${geoContext?.city_name?` в ${geoContext.city_name}`:''} — ЦУИМ`;
+  document.querySelector('meta[name="description"]')?.setAttribute('content',desc+(scope?` География: ${scope}.`:''));
   let canonical=document.querySelector('link[rel="canonical"]');if(!canonical){canonical=document.createElement('link');canonical.rel='canonical';document.head.appendChild(canonical)}canonical.href=location.origin+route(currentSection,currentSub);
   $('pageTitle').textContent=title;$('pageDescription').textContent=desc;
-  $('heroEyebrow').textContent=currentSection==='ads'?'Объявления вашего города':sub?`${sec?.title||'Каталог'} · подкатегория`:currentSection==='all'?'Городской каталог':sec?.subtitle||'Городской раздел';
+  $('heroEyebrow').textContent=scope||currentSection==='ads'?'Объявления вашего города':sub?`${sec?.title||'Каталог'} · подкатегория`:currentSection==='all'?'Городской каталог':sec?.subtitle||'Городской раздел';
+  if(scope)$('heroEyebrow').textContent=scope;
   $('contentTitle').textContent=currentSection==='ads'?(sub?.title||'Свежие объявления'):(sub?sub.title:(currentSection==='all'?'Все предложения':sec?.title||'Предложения'));
-  $('contentSubtitle').textContent=currentSection==='ads'?'Удобный поиск по частным и коммерческим объявлениям.':sub?'Предложения, которым продавец или администратор назначил эту подкатегорию.':(sectionCopy[currentSection]?.[1]||'Актуальные предложения Marketplace.');
+  $('contentSubtitle').textContent=(currentSection==='ads'?'Удобный поиск по частным и коммерческим объявлениям.':sub?'Предложения, которым продавец или администратор назначил эту подкатегорию.':(sectionCopy[currentSection]?.[1]||'Актуальные предложения Marketplace.'))+(scope?` · ${scope}`:'');
   $('mobileCurrent').textContent=sub?.title||sec?.title||'Все категории';
   $('heroIcon').innerHTML=sec?.icon_url?`<img src="${esc(sec.icon_url)}" alt="${esc(title)}">`:esc(sec?.icon_fallback||'⌂');
   const bc=[`<a href="/">Главная</a><span>›</span><a href="/catalog/">Каталог</a>`];if(sec)bc.push(`<span>›</span><a href="${route(sec.section_key)}">${esc(sec.title)}</a>`);if(sub)bc.push(`<span>›</span><span>${esc(sub.title)}</span>`);$('breadcrumbs').innerHTML=bc.join('');
@@ -161,13 +176,16 @@ function setupClassifieds(){
   $('adReset').onclick=()=>{['adMinPrice','adMaxPrice'].forEach(id=>$(id).value='');['adCondition','adCity'].forEach(id=>$(id).value='');['adPhoto','adNegotiable','adExchange'].forEach(id=>$(id).checked=false);apply()};
 }
 async function load(){
+  geoContext=window.CUIM_GEO?.get?.()||geoContext;refreshGeoButton();
   const[secR,subR]=await Promise.all([s.from('marketplace_city_sections').select('section_key,slug,title,subtitle,icon_url,icon_fallback,sort_order').eq('active',true).order('sort_order'),s.from('marketplace_city_subcategories').select('section_key,subcategory_key,slug,title,sort_order').eq('active',true).order('sort_order')]);
   if(secR.error||subR.error){$('products').innerHTML=`<div class="empty">Не удалось загрузить структуру каталога.<br>${esc(secR.error?.message||subR.error?.message||'')}</div>`;return}
   sections=(secR.data||[]).filter(x=>x.section_key!=='all');subs=subR.data||[];resolveRoute();
-  const{data,error}=await s.rpc('marketplace_catalog_products_v2',{p_query:null,p_section:currentSection==='all'?null:currentSection,p_subcategory:currentSub||null,p_partner_id:null});
+  const{data,error}=await s.rpc('marketplace_catalog_products_v3',{p_query:null,p_section:currentSection==='all'?null:currentSection,p_subcategory:currentSub||null,p_partner_id:null,p_city_id:geoContext?.city_id||null,p_area_id:geoContext?.area_id||null});
   if(error){$('products').innerHTML=`<div class="empty">Не удалось загрузить каталог.<br>${esc(error.message)}</div>`;return}
   all=data||[];setMeta();renderNavigation();renderSellerFilter();setupClassifieds();apply();
 }
+installGeoButton();
+window.addEventListener('cuim:geo-change',e=>{const next=e.detail||null;if(next?.city_id===geoContext?.city_id&&next?.area_id===geoContext?.area_id){geoContext=next;refreshGeoButton();return}geoContext=next;refreshGeoButton();location.reload()});
 $('search').oninput=apply;$('searchBtn').onclick=apply;$('sellerFilter').onchange=apply;$('sort').onchange=apply;$('search').onkeydown=e=>{if(e.key==='Enter')apply()};
 const openSide=()=>{$('catalogSidebar').classList.add('open');$('sidebarShade').classList.add('show')},closeSide=()=>{$('catalogSidebar').classList.remove('open');$('sidebarShade').classList.remove('show')};
 $('sidebarOpen').onclick=openSide;$('sidebarClose').onclick=closeSide;$('sidebarShade').onclick=closeSide;
