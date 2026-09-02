@@ -45,3 +45,5 @@ if(!enhanceClassifieds()){
   observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   setTimeout(()=>observer.disconnect(),12000);
 }
+
+import('/catalog/classifieds-advertising.js').catch(error=>console.warn('Advertising module unavailable',error));
