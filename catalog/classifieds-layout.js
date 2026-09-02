@@ -55,6 +55,23 @@ function installSidebarFilters(host){
   updateCount();
 }
 
+function installAdDetailLinks(){
+  document.querySelectorAll('.ad-card').forEach(card=>{
+    if(card.dataset.detailReady==='1')return;
+    const fav=card.querySelector('[data-ad-fav]');
+    const id=fav?.dataset.adFav;
+    if(!id)return;
+    const href=`/ad/?id=${encodeURIComponent(id)}`;
+    card.dataset.detailReady='1';
+    const title=card.querySelector('h3');
+    if(title&&!title.querySelector('a'))title.innerHTML=`<a class="ad-detail-title" href="${href}">${title.innerHTML}</a>`;
+    const primary=card.querySelector('.product-actions .primary');
+    if(primary){primary.href=href;primary.textContent='Подробнее'}
+    const photo=card.querySelector('.product-img');
+    if(photo){photo.classList.add('ad-detail-photo');photo.addEventListener('click',e=>{if(e.target.closest('button,a'))return;location.href=href})}
+  });
+}
+
 function enhanceClassifieds(){
   if(!document.body.classList.contains('mode-ads')) return false;
   const host=document.querySelector('.classifieds-comfort');
@@ -70,6 +87,10 @@ function enhanceClassifieds(){
     host.insertBefore(search,categories);
   }
   installSidebarFilters(host);
+  if(!document.getElementById('classified-detail-link-style')){
+    const style=document.createElement('style');style.id='classified-detail-link-style';style.textContent='.ad-detail-title{color:inherit;text-decoration:none}.ad-detail-title:hover{color:#1d4ed8}.ad-detail-photo{cursor:pointer}';document.head.appendChild(style)
+  }
+  installAdDetailLinks();
   document.body.classList.add('classifieds-light-v2');
   return true;
 }
@@ -79,5 +100,7 @@ if(!enhanceClassifieds()){
   observer.observe(document.documentElement,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
   setTimeout(()=>observer.disconnect(),12000);
 }
+const cardObserver=new MutationObserver(()=>installAdDetailLinks());
+cardObserver.observe(document.documentElement,{childList:true,subtree:true});
 
 import('/catalog/classifieds-advertising.js').catch(error=>console.warn('Advertising module unavailable',error));
