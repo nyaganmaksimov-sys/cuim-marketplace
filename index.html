@@ -66,4 +66,5 @@ async function load(){const{data,error}=await s.rpc('marketplace_products',{p_qu
 document.querySelectorAll('[data-section]').forEach(b=>b.onclick=()=>setSection(b.dataset.section));document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.dataset.tab));document.querySelectorAll('[data-footer-section]').forEach(a=>a.onclick=e=>{e.preventDefault();setSection(a.dataset.footerSection)});document.querySelectorAll('[data-footer-companies]').forEach(a=>a.onclick=e=>{e.preventDefault();showTab('companies');document.getElementById('catalog').scrollIntoView({behavior:'smooth'})});$('q').oninput=render;$('category').onchange=render;$('sellerFilter').onchange=render;$('sort').onchange=render;$('searchBtn').onclick=render;$('cityButton').onclick=()=>alert('Выбор города подключим следующим шагом. Архитектура городской платформы уже готова.');
 loadCitySections();loadSlider();load();
 </script>
+<script type="module" src="./taxonomy-menu.js"></script>
 </body></html>
