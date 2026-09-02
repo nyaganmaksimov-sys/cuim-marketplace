@@ -1,0 +1,33 @@
+name: Add admin install button
+on:
+  push:
+    paths:
+      - '.github/workflows/add-admin-install.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch admin
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('admin/index.html')
+          s=p.read_text()
+          old='<div class="top-actions"><div class="admin-user"><b>ADMIN</b><span id="adminEmail"></span></div><a class="btn light small" href="../" target="_blank">Сайт ↗</a><button class="btn light small" id="logout">Выйти</button></div>'
+          new='<div class="top-actions"><div class="admin-user"><b>ADMIN</b><span id="adminEmail"></span></div><a class="btn soft small" href="../manage/install.html">⬇ Установить приложение</a><a class="btn light small" href="../" target="_blank">Сайт ↗</a><button class="btn light small" id="logout">Выйти</button></div>'
+          if old not in s:
+              raise SystemExit('target not found')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin/index.html
+          git commit -m 'Add install app button to admin'
+          git push
