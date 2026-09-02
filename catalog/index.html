@@ -6,79 +6,20 @@
   <meta name="theme-color" content="#071633">
   <title>Каталог — ЦУИМ</title>
   <meta name="description" content="Товары, услуги, работа, еда, авто, объявления и события города в ЦУИМ.">
+  <link rel="canonical" href="https://tcuim.online/catalog/">
   <link rel="icon" href="/images/logo_cuim.png">
   <link rel="stylesheet" href="/catalog/catalog.css">
 </head>
 <body>
   <div class="utility"><div class="wrap"><span>ЦУИМ · городской маркетплейс</span><a href="/account.html">Личный кабинет</a></div></div>
-  <header class="top">
-    <div class="wrap topin">
-      <a class="brand" href="/"><img src="/images/logo_cuim.png" alt="ЦУИМ"></a>
-      <nav class="mainnav">
-        <a class="active" href="/catalog/">Каталог</a>
-        <a href="/#companies">Компании</a>
-        <a href="/messages.html">Сообщения</a>
-        <a href="/documents.html">Документы</a>
-      </nav>
-      <div class="top-actions"><a class="btn light" href="/cart.html">Корзина</a><a class="btn" href="/account.html">Личный кабинет</a></div>
-    </div>
-  </header>
-
+  <header class="top"><div class="wrap topin"><a class="brand" href="/"><img src="/images/logo_cuim.png" alt="ЦУИМ"></a><nav class="mainnav"><a class="active" href="/catalog/">Каталог</a><a href="/#companies">Компании</a><a href="/messages.html">Сообщения</a><a href="/documents.html">Документы</a></nav><div class="top-actions"><a class="btn light" href="/cart.html">Корзина</a><a class="btn" href="/account.html">Личный кабинет</a></div></div></header>
   <main>
     <section class="crumbs-wrap"><div class="wrap"><nav id="breadcrumbs" class="breadcrumbs"><a href="/">Главная</a><span>›</span><a href="/catalog/">Каталог</a></nav></div></section>
-    <section class="catalog-hero">
-      <div class="wrap hero-grid">
-        <div class="hero-copy">
-          <div class="eyebrow" id="heroEyebrow">Городской каталог</div>
-          <h1 id="pageTitle">Все категории</h1>
-          <p id="pageDescription">Товары, услуги и предложения компаний и специалистов города в одном месте.</p>
-          <div class="hero-meta"><span id="offersMeta">Загрузка предложений…</span><span id="companiesMeta">Загрузка компаний…</span></div>
-        </div>
-        <div class="hero-icon" id="heroIcon">⌂</div>
-      </div>
-    </section>
-
+    <section class="catalog-hero"><div class="wrap hero-grid"><div class="hero-copy"><div class="eyebrow" id="heroEyebrow">Городской каталог</div><h1 id="pageTitle">Все категории</h1><p id="pageDescription">Товары, услуги и предложения компаний и специалистов города в одном месте.</p><div class="hero-meta"><span id="offersMeta">Загрузка предложений…</span><span id="companiesMeta">Загрузка компаний…</span></div></div><div class="hero-icon" id="heroIcon">⌂</div></div></section>
     <section class="wrap section-strip" id="sectionStrip"></section>
-
-    <section class="wrap catalog-layout">
-      <aside class="sidebar" id="catalogSidebar">
-        <div class="sidebar-head"><b>Категории</b><button id="sidebarClose" aria-label="Закрыть">×</button></div>
-        <div id="sidebarContent"></div>
-      </aside>
-
-      <div class="catalog-main">
-        <div class="mobile-filter-row"><button class="btn light" id="sidebarOpen">☰ Категории</button><span id="mobileCurrent"></span></div>
-        <div class="toolbar">
-          <div class="searchbox"><input id="search" placeholder="Поиск в категории"><button id="searchBtn">Найти</button></div>
-          <select id="sellerFilter"><option value="">Все компании</option></select>
-          <select id="sort">
-            <option value="default">По умолчанию</option>
-            <option value="priceAsc">Сначала дешевле</option>
-            <option value="priceDesc">Сначала дороже</option>
-            <option value="title">По названию</option>
-          </select>
-        </div>
-
-        <div class="content-head"><div><h2 id="contentTitle">Предложения</h2><p id="contentSubtitle">Актуальные предложения Marketplace.</p></div><span class="count" id="resultCount"></span></div>
-        <div class="products" id="products"><div class="empty">Загрузка каталога…</div></div>
-
-        <section class="companies-block" id="companiesBlock">
-          <div class="content-head"><div><h2>Компании и специалисты</h2><p>Участники ЦУИМ, у которых есть предложения в этом разделе.</p></div></div>
-          <div class="companies" id="companies"></div>
-        </section>
-      </div>
-    </section>
+    <section class="wrap catalog-layout"><aside class="sidebar" id="catalogSidebar"><div class="sidebar-head"><b>Категории</b><button id="sidebarClose" aria-label="Закрыть">×</button></div><div id="sidebarContent"></div></aside><div class="catalog-main"><div class="mobile-filter-row"><button class="btn light" id="sidebarOpen">☰ Категории</button><span id="mobileCurrent"></span></div><div class="toolbar"><div class="searchbox"><input id="search" placeholder="Поиск в категории"><button id="searchBtn">Найти</button></div><select id="sellerFilter"><option value="">Все компании</option></select><select id="sort"><option value="default">По умолчанию</option><option value="priceAsc">Сначала дешевле</option><option value="priceDesc">Сначала дороже</option><option value="title">По названию</option></select></div><div class="content-head"><div><h2 id="contentTitle">Предложения</h2><p id="contentSubtitle">Актуальные предложения Marketplace.</p></div><span class="count" id="resultCount"></span></div><div class="products" id="products"><div class="empty">Загрузка каталога…</div></div><section class="companies-block" id="companiesBlock"><div class="content-head"><div><h2>Компании и специалисты</h2><p>Участники ЦУИМ, у которых есть предложения в этом разделе.</p></div></div><div class="companies" id="companies"></div></section></div></section>
   </main>
-
-  <footer>
-    <div class="wrap footer-grid">
-      <div class="footer-brand"><img src="/images/logo_cuim_white.png" alt="ЦУИМ"><p>Городской маркетплейс: товары, услуги, работа, еда, авто, объявления и события.</p></div>
-      <div><b>Каталог</b><a href="/catalog/?section=goods">Товары</a><a href="/catalog/?section=services">Услуги</a><a href="/catalog/?section=jobs">Работа</a></div>
-      <div><b>Город</b><a href="/catalog/?section=food">Еда</a><a href="/catalog/?section=auto">Авто</a><a href="/catalog/?section=events">Афиша</a></div>
-      <div><b>ЦУИМ</b><a href="/">Главная</a><a href="/account.html">Личный кабинет</a><a href="/admin/">Для администраторов</a></div>
-    </div>
-    <div class="wrap footer-bottom">© ЦУИМ · городской маркетплейс</div>
-  </footer>
+  <footer><div class="wrap footer-grid"><div class="footer-brand"><img src="/images/logo_cuim_white.png" alt="ЦУИМ"><p>Городской маркетплейс: товары, услуги, работа, еда, авто, объявления и события.</p></div><div><b>Каталог</b><a href="/catalog/goods/">Товары</a><a href="/catalog/services/">Услуги</a><a href="/catalog/jobs/">Работа</a></div><div><b>Город</b><a href="/catalog/food/">Еда</a><a href="/catalog/auto/">Авто</a><a href="/catalog/events/">Афиша</a></div><div><b>ЦУИМ</b><a href="/">Главная</a><a href="/account.html">Личный кабинет</a><a href="/admin/">Для администраторов</a></div></div><div class="wrap footer-bottom">© ЦУИМ · городской маркетплейс</div></footer>
   <div class="sidebar-shade" id="sidebarShade"></div>
   <script type="module" src="/catalog/catalog.js"></script>
 </body>
