@@ -1,0 +1,12 @@
+{
+  "name":"ЦУИМ Управление Marketplace",
+  "short_name":"ЦУИМ Управление",
+  "description":"Браузерное приложение для управления городским маркетплейсом ЦУИМ",
+  "start_url":"./",
+  "scope":"./",
+  "display":"standalone",
+  "background_color":"#f4f7fb",
+  "theme_color":"#071633",
+  "lang":"ru",
+  "icons":[{"src":"./icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}]
+}
