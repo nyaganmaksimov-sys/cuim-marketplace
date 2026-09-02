@@ -6,7 +6,7 @@
 <script type="module">
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/+esm';
 const s=createClient('https://qgakliolffnwkymoqvzn.supabase.co','sb_publishable_WbZxATu_lxqWF21jR_qFag_fcEeVIMu');const $=id=>document.getElementById(id),esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));let session=null,rows=[],filter='ALL',channel=null;
-const icons={MESSAGE:'💬',CLASSIFIED_APPROVED:'✅',CLASSIFIED_REJECTED:'✏️',CLASSIFIED_HIDDEN:'⛔',CLASSIFIED_EXPIRING:'⏳',CLASSIFIED_EXPIRED:'⌛',BEAUTY_BOOKING_NEW:'📅',BEAUTY_BOOKING_CONFIRMED:'💗',BEAUTY_BOOKING_STATUS:'✂️'};
+const icons={MESSAGE:'💬',CLASSIFIED_APPROVED:'✅',CLASSIFIED_REJECTED:'✏️',CLASSIFIED_HIDDEN:'⛔',CLASSIFIED_EXPIRING:'⏳',CLASSIFIED_EXPIRED:'⌛',BEAUTY_BOOKING_NEW:'📅',BEAUTY_BOOKING_CONFIRMED:'💗',BEAUTY_BOOKING_STATUS:'✂️',BEAUTY_BOOKING_CANCELLED_BY_CUSTOMER:'❌',BEAUTY_BOOKING_RESCHEDULED:'🔄',BEAUTY_REVIEW_NEW:'⭐',BEAUTY_REVIEW_REPLY:'💬',BEAUTY_REMINDER_24H:'⏰',BEAUTY_REMINDER_2H:'⏰'};
 function age(v){if(!v)return'';const d=new Date(v),ms=Date.now()-d.getTime(),m=Math.floor(ms/60000);if(m<1)return'только что';if(m<60)return`${m} мин. назад`;const h=Math.floor(m/60);if(h<24)return`${h} ч. назад`;const days=Math.floor(h/24);if(days<7)return`${days} дн. назад`;return d.toLocaleDateString('ru-RU',{day:'numeric',month:'long'})}
 function safeUrl(v){const x=String(v||'');return x.startsWith('/')&&!x.startsWith('//')?x:'/notifications.html'}
 function classifiedType(t){return String(t||'').startsWith('CLASSIFIED_')}function beautyType(t){return String(t||'').startsWith('BEAUTY_')}
