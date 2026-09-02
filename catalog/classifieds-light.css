@@ -1,0 +1,32 @@
+body.mode-ads.classifieds-light-v2{background:#f8fafc;color:#172033}
+body.mode-ads.classifieds-light-v2 .catalog-hero{background:#f8fafc;padding:20px 0 12px}
+body.mode-ads.classifieds-light-v2 .hero-grid{min-height:170px;background:linear-gradient(135deg,#ffffff,#f8fbff 58%,#fff7ed);color:#172033;border:1px solid #e7edf5;box-shadow:0 14px 38px #0f172a0b}
+body.mode-ads.classifieds-light-v2 .eyebrow{color:#ea580c}
+body.mode-ads.classifieds-light-v2 .hero-copy p{color:#64748b}
+body.mode-ads.classifieds-light-v2 .hero-meta span{background:#fff;border:1px solid #e2e8f0;color:#64748b}
+body.mode-ads.classifieds-light-v2 .hero-icon{filter:none}
+body.mode-ads.classifieds-light-v2 .classifieds-intro{background:transparent;border:0;box-shadow:none;padding:6px 2px 12px}
+body.mode-ads.classifieds-light-v2 .classifieds-intro h2{font-size:24px;color:#0f172a}
+body.mode-ads.classifieds-light-v2 .classifieds-intro p{color:#64748b}
+body.mode-ads.classifieds-light-v2 .classifieds-search-top{margin:0 0 15px;background:#fff;border:1px solid #e2e8f0;border-radius:20px;padding:15px;box-shadow:0 10px 30px #0f172a09}
+body.mode-ads.classifieds-light-v2 .classifieds-search-caption{display:flex;align-items:baseline;gap:10px;margin:0 2px 10px}
+body.mode-ads.classifieds-light-v2 .classifieds-search-caption b{font-size:13px;color:#172033}
+body.mode-ads.classifieds-light-v2 .classifieds-search-caption span{font-size:10px;color:#94a3b8}
+body.mode-ads.classifieds-light-v2 .classifieds-search-top .searchbox{display:grid;grid-template-columns:1fr auto;border:1px solid #d9e1eb;border-radius:15px;overflow:hidden;background:#fff;box-shadow:0 0 0 4px #f8fafc}
+body.mode-ads.classifieds-light-v2 .classifieds-search-top .searchbox input{min-height:52px;border:0;padding:0 16px;font-size:14px;background:#fff;color:#0f172a;outline:0}
+body.mode-ads.classifieds-light-v2 .classifieds-search-top .searchbox button{min-width:116px;border:0;background:#172554;color:#fff;font-weight:900;cursor:pointer}
+body.mode-ads.classifieds-light-v2 .classifieds-chips{margin-bottom:14px}
+body.mode-ads.classifieds-light-v2 .classifieds-chip{background:#fff;border-color:#e4eaf1;box-shadow:0 8px 24px #0f172a08}
+body.mode-ads.classifieds-light-v2 .classifieds-chip:hover{background:#fffaf5;border-color:#fdba74;box-shadow:0 14px 32px #f9731612}
+body.mode-ads.classifieds-light-v2 .classifieds-chip.active{background:#fff7ed;border-color:#fb923c}
+body.mode-ads.classifieds-light-v2 .classifieds-filters{background:#fff;border-color:#e5eaf1;box-shadow:0 8px 24px #0f172a06}
+body.mode-ads.classifieds-light-v2 .toolbar{grid-template-columns:minmax(180px,1fr) 190px;margin-top:12px;background:transparent}
+body.mode-ads.classifieds-light-v2 .toolbar>.searchbox{display:none}
+body.mode-ads.classifieds-light-v2 .toolbar select{background:#fff;border-color:#dce3ec}
+body.mode-ads.classifieds-light-v2 .product{background:#fff;border-color:#e5eaf1;box-shadow:0 8px 26px #0f172a08}
+body.mode-ads.classifieds-light-v2 .product:hover{border-color:#d5deea;box-shadow:0 14px 34px #0f172a0d}
+body.mode-ads.classifieds-light-v2 .product-actions .primary{background:#172554}
+body.mode-ads.classifieds-light-v2 .classifieds-post{background:linear-gradient(135deg,#fb923c,#ea580c)!important;box-shadow:0 10px 22px #f9731626}
+body.mode-ads.classifieds-light-v2 footer{background:#0b1730}
+@media(max-width:900px){body.mode-ads.classifieds-light-v2 .hero-grid{min-height:150px}.classifieds-search-caption{align-items:flex-start!important;flex-direction:column;gap:3px!important}body.mode-ads.classifieds-light-v2 .toolbar{grid-template-columns:1fr 1fr}}
+@media(max-width:680px){body.mode-ads.classifieds-light-v2 .catalog-hero{padding-top:10px}body.mode-ads.classifieds-light-v2 .hero-grid{padding:20px;border-radius:20px}body.mode-ads.classifieds-light-v2 .classifieds-search-top{padding:10px;border-radius:16px}body.mode-ads.classifieds-light-v2 .classifieds-search-caption span{display:none}body.mode-ads.classifieds-light-v2 .classifieds-search-top .searchbox input{min-height:48px;font-size:13px}body.mode-ads.classifieds-light-v2 .classifieds-search-top .searchbox button{min-width:84px;padding:0 12px}body.mode-ads.classifieds-light-v2 .toolbar{grid-template-columns:1fr}.classifieds-intro h2{font-size:21px!important}}
