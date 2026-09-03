@@ -1,4 +1,4 @@
-name: Install product gallery integration
+name: Validate product gallery integration
 on:
   push:
     paths:
@@ -6,68 +6,32 @@ on:
 permissions:
   contents: write
 jobs:
-  install:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Connect and harden gallery scripts
+      - name: Fix empty gallery cover and validate scripts
         run: |
           python3 - <<'PY'
           from pathlib import Path
-
-          seller=Path('seller-catalog.html')
-          s=seller.read_text(encoding='utf-8')
-          gallery='<script type="module" src="/seller-gallery.js"></script>'
-          guide='<script src="/seller-media-guide.js"></script>'
-          if gallery not in s:
-              if guide in s:
-                  s=s.replace(guide,gallery+'\n'+guide,1)
-              elif '</body>' in s:
-                  s=s.replace('</body>',gallery+'\n</body>',1)
-              else:
-                  raise SystemExit('seller-catalog.html has no insertion point')
-              seller.write_text(s,encoding='utf-8')
-
-          offer=Path('offer.html')
-          o=offer.read_text(encoding='utf-8')
-          public_gallery='<script type="module" src="/offer-gallery.js"></script>'
-          if public_gallery not in o:
-              if '</body>' not in o:
-                  raise SystemExit('offer.html has no </body>')
-              o=o.replace('</body>',public_gallery+'\n</body>',1)
-              offer.write_text(o,encoding='utf-8')
-
-          g=Path('seller-gallery.js')
-          js=g.read_text(encoding='utf-8')
-          old="""    if(!x.file)continue;\n    const path=`${session.user.id}/products/${uuid()}/${uuid()}.${extFor(x.file)}`;"""
-          new="""    if(!x.file||(x.storagePath&&x.url))continue;\n    const path=`${session.user.id}/products/${uuid()}/${uuid()}.${extFor(x.file)}`;"""
-          if old in js: js=js.replace(old,new,1)
-          old="""    uploaded.push(path);x.storagePath=path;x.url=pub;x.source='uploaded';\n    revoke(x);x.preview=null;x.file=null;"""
-          new="""    uploaded.push(path);x.storagePath=path;x.url=pub;x.source='uploaded-pending';"""
-          if old in js: js=js.replace(old,new,1)
-          marker="""async function cleanupPaths(paths){\n"""
-          helpers="""function restorePending(paths){\n  const set=new Set(paths||[]);\n  for(const x of items){if(set.has(x.storagePath)&&x.file){x.storagePath=null;x.url=null;x.source='pending'}}\n  render();\n}\nfunction finalizeUploads(){\n  for(const x of items){if(x.file&&x.storagePath&&x.url){revoke(x);x.preview=null;x.file=null;x.source='existing'}}\n}\n"""
-          if 'function restorePending(paths)' not in js and marker in js:
-              js=js.replace(marker,helpers+marker,1)
-          old="""    const beforeId=productId(),beforeTitle=$('title')?.value?.trim()||'',newUploadPaths=[];\n    try{"""
-          new="""    const beforeId=productId(),beforeTitle=$('title')?.value?.trim()||'',newUploadPaths=[];let productSaved=false;\n    try{"""
-          if old in js: js=js.replace(old,new,1)
-          old="""      if(!ok){await cleanupPaths(newUploadPaths);setMsg('Публикация не сохранена — новые файлы не были привязаны.',true);return}\n      let pid=beforeId;"""
-          new="""      if(!ok){await cleanupPaths(newUploadPaths);restorePending(newUploadPaths);setMsg('Публикация не сохранена — фото остались в форме, исправьте поля и сохраните снова.',true);return}\n      productSaved=true;\n      let pid=beforeId;"""
-          if old in js: js=js.replace(old,new,1)
-          old="""      setMsg('Сохраняем галерею…');await replaceGallery(pid,beforeTitle);\n      if(beforeId){"""
-          new="""      setMsg('Сохраняем галерею…');await replaceGallery(pid,beforeTitle);finalizeUploads();\n      if(beforeId){"""
-          if old in js: js=js.replace(old,new,1)
-          old="""      const paths=[...newUploadPaths,...(err?.uploaded||[])];await cleanupPaths(paths);\n      setMsg('Ошибка галереи: '+(err?.message||err),true);"""
-          new="""      const paths=[...new Set([...newUploadPaths,...(err?.uploaded||[])])];\n      if(!productSaved){await cleanupPaths(paths);restorePending(paths)}\n      setMsg((productSaved?'Публикация сохранена, но галерею нужно сохранить повторно: ':'Ошибка галереи: ')+(err?.message||err),true);"""
-          if old in js: js=js.replace(old,new,1)
-          g.write_text(js,encoding='utf-8')
+          p=Path('seller-gallery.js')
+          s=p.read_text(encoding='utf-8')
+          old="function removeItem(i){const x=items[i];if(!x)return;revoke(x);items.splice(i,1);normalized();render();setMsg('Изображение убрано из галереи. Изменение применится после сохранения публикации.')}"
+          new="function removeItem(i){const x=items[i];if(!x)return;revoke(x);items.splice(i,1);normalized();if(!items.length&&$('imageUrl'))$('imageUrl').value='';render();setMsg('Изображение убрано из галереи. Изменение применится после сохранения публикации.')}"
+          if old in s:
+              s=s.replace(old,new,1)
+              p.write_text(s,encoding='utf-8')
           PY
-      - name: Commit gallery integration
+          node --check seller-gallery.js
+          node --check offer-gallery.js
+          node --check seller-media-guide.js
+          grep -q 'src="/seller-gallery.js"' seller-catalog.html
+          grep -q 'src="/offer-gallery.js"' offer.html
+      - name: Commit final gallery fix
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if git diff --quiet; then exit 0; fi
-          git add seller-catalog.html offer.html seller-gallery.js
-          git commit -m "Harden multi-image gallery saving"
+          git add seller-gallery.js
+          git commit -m "Clear legacy cover when gallery is emptied"
           git push
