@@ -61,15 +61,22 @@ async function uploadPending(){
   if(!await ensureSession())throw new Error('Сессия продавца не найдена. Войдите заново.');
   const uploaded=[];
   for(const x of items){
-    if(!x.file)continue;
+    if(!x.file||(x.storagePath&&x.url))continue;
     const path=`${session.user.id}/products/${uuid()}/${uuid()}.${extFor(x.file)}`;
     const{error}=await s.storage.from('marketplace-public').upload(path,x.file,{cacheControl:'3600',upsert:false,contentType:x.file.type});
     if(error)throw Object.assign(new Error(error.message),{uploaded});
     const pub=s.storage.from('marketplace-public').getPublicUrl(path).data.publicUrl;
-    uploaded.push(path);x.storagePath=path;x.url=pub;x.source='uploaded';
-    revoke(x);x.preview=null;x.file=null;
+    uploaded.push(path);x.storagePath=path;x.url=pub;x.source='uploaded-pending';
   }
   return uploaded;
+}
+function restorePending(paths){
+  const set=new Set(paths||[]);
+  for(const x of items){if(set.has(x.storagePath)&&x.file){x.storagePath=null;x.url=null;x.source='pending'}}
+  render();
+}
+function finalizeUploads(){
+  for(const x of items){if(x.file&&x.storagePath&&x.url){revoke(x);x.preview=null;x.file=null;x.source='existing'}}
 }
 async function cleanupPaths(paths){
   if(!paths?.length||!session)return;
@@ -124,23 +131,25 @@ function wrapSubmit(){
   const original=form.onsubmit;form.dataset.galleryWrapped='1';
   form.onsubmit=async e=>{
     e.preventDefault();
-    const beforeId=productId(),beforeTitle=$('title')?.value?.trim()||'',newUploadPaths=[];
+    const beforeId=productId(),beforeTitle=$('title')?.value?.trim()||'',newUploadPaths=[];let productSaved=false;
     try{
       setMsg('Подготавливаем изображения…');
       const uploaded=await uploadPending();newUploadPaths.push(...uploaded);normalized();syncLegacyInput();
       const coverUrl=currentCover()?.url||$('imageUrl')?.value?.trim()||null;
       await original.call(form,e);
       const ok=$('formMsg')?.classList.contains('ok');
-      if(!ok){await cleanupPaths(newUploadPaths);setMsg('Публикация не сохранена — новые файлы не были привязаны.',true);return}
+      if(!ok){await cleanupPaths(newUploadPaths);restorePending(newUploadPaths);setMsg('Публикация не сохранена — фото остались в форме, исправьте поля и сохраните снова.',true);return}
+      productSaved=true;
       let pid=beforeId;if(!pid)pid=await resolveNewProduct(beforeTitle,coverUrl);
       if(!pid){setMsg('Публикация сохранена, но не удалось привязать галерею. Обложка сохранена как обычно.',true);return}
-      setMsg('Сохраняем галерею…');await replaceGallery(pid,beforeTitle);
+      setMsg('Сохраняем галерею…');await replaceGallery(pid,beforeTitle);finalizeUploads();
       if(beforeId){lastProductId=pid;await loadGallery(pid)}else{releaseAll();items=[];lastProductId='';render()}
       const fm=$('formMsg');if(fm){fm.className='msg ok';fm.textContent='Сохранено. Фото и порядок галереи обновлены.'}
       setMsg('Галерея сохранена.');
     }catch(err){
-      const paths=[...newUploadPaths,...(err?.uploaded||[])];await cleanupPaths(paths);
-      setMsg('Ошибка галереи: '+(err?.message||err),true);
+      const paths=[...new Set([...newUploadPaths,...(err?.uploaded||[])])];
+      if(!productSaved){await cleanupPaths(paths);restorePending(paths)}
+      setMsg((productSaved?'Публикация сохранена, но галерею нужно сохранить повторно: ':'Ошибка галереи: ')+(err?.message||err),true);
       const fm=$('formMsg');if(fm&&!fm.classList.contains('ok')){fm.className='msg err';fm.textContent='Ошибка: '+(err?.message||err)}
     }
   };
