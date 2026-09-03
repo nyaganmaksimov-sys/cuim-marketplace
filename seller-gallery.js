@@ -30,7 +30,7 @@ function render(){
 }
 function setCover(i){if(!items[i])return;items.forEach((x,n)=>x.cover=n===i);render();setMsg('Обложка изменена. Нажмите «Сохранить», чтобы применить изменения.')}
 function move(i,d){const j=i+d;if(!items[i]||!items[j])return;[items[i],items[j]]=[items[j],items[i]];render();setMsg('Порядок изменён. Нажмите «Сохранить», чтобы применить изменения.')}
-function removeItem(i){const x=items[i];if(!x)return;revoke(x);items.splice(i,1);normalized();render();setMsg('Изображение убрано из галереи. Изменение применится после сохранения публикации.')}
+function removeItem(i){const x=items[i];if(!x)return;revoke(x);items.splice(i,1);normalized();if(!items.length&&$('imageUrl'))$('imageUrl').value='';render();setMsg('Изображение убрано из галереи. Изменение применится после сохранения публикации.')}
 function extFor(file){if(file.type==='image/png')return'png';if(file.type==='image/webp')return'webp';return'jpg'}
 function addFiles(list){
   const files=[...list];if(!files.length)return;
