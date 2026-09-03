@@ -22,17 +22,22 @@ const sectionCopy={
   events:['Афиша','Концерты, события, выставки и городские мероприятия.']
 };
 
+function geoRadiusKm(){return Math.max(1,Math.round(Number(geoContext?.radius_m||3000)/1000))}
 function refreshGeoButton(){
   const b=$('cityButton');if(!b)return;geoContext=window.CUIM_GEO?.get?.()||geoContext;
-  const area=geoContext?.area_short_name||geoContext?.area_name||'Город и район';
-  b.innerHTML=`${geoPin}<span><b>${esc(geoContext?.city_name||'Выбрать город')}</b><small>${esc(area)}</small></span>`;
+  const area=geoContext?.metro_name?`м. ${geoContext.metro_name} · ${geoRadiusKm()} км`:(geoContext?.area_short_name||geoContext?.area_name||'Вся Москва');
+  b.innerHTML=`${geoPin}<span><b>${esc(geoContext?.city_name||'Москва')}</b><small>${esc(area)}</small></span>`;
 }
 function installGeoButton(){
   const actions=document.querySelector('.top-actions');if(!actions)return;
   let b=$('cityButton');if(!b){b=document.createElement('button');b.id='cityButton';b.type='button';b.className='btn light cuim-geo-trigger';actions.prepend(b)}
   b.onclick=e=>{e.preventDefault();window.CUIM_GEO?.open?.()};refreshGeoButton();
 }
-function geoScopeText(){if(!geoContext?.city_name)return'';return geoContext.area_name?`${geoContext.city_name} · ${geoContext.area_short_name||geoContext.area_name}`:geoContext.city_name}
+function geoScopeText(){
+  if(!geoContext?.city_name)return'Москва';
+  if(geoContext.metro_name)return`${geoContext.city_name} · м. ${geoContext.metro_name} · ${geoRadiusKm()} км`;
+  return geoContext.area_name?`${geoContext.city_name} · ${geoContext.area_short_name||geoContext.area_name}`:geoContext.city_name;
+}
 
 function sectionByKey(k){return sections.find(x=>x.section_key===k)||null}
 function subByKey(k){return subs.find(x=>x.subcategory_key===k)||null}
@@ -138,15 +143,20 @@ function timeAgo(v){
   if(!v)return'Недавно';const d=new Date(v);if(Number.isNaN(d.getTime()))return'Недавно';const days=Math.floor((Date.now()-d.getTime())/86400000);if(days<=0)return'Сегодня';if(days===1)return'Вчера';if(days<7)return`${days} дн. назад`;return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'short'});
 }
 function favoriteIds(){try{return JSON.parse(localStorage.getItem('cuim-classified-favorites')||'[]')}catch{return[]}}
+function locationText(x){
+  const base=[x.city,x.address].filter(Boolean).join(', ')||'Москва';
+  if(geoContext?.metro_name&&Number.isFinite(Number(x.metro_distance_m)))return`${base} · ${Math.max(0.1,Number(x.metro_distance_m)/1000).toFixed(Number(x.metro_distance_m)<1000?1:0)} км от м. ${geoContext.metro_name}`;
+  return base;
+}
 function adCard(x){
   const d=x.marketplace_details||{},facts=[];if(d.condition)facts.push(`<span class="ad-fact">${esc(conditionLabel[d.condition]||d.condition)}</span>`);if(d.negotiable)facts.push('<span class="ad-fact hot">Торг</span>');if(d.exchange)facts.push('<span class="ad-fact">Обмен</span>');
   const saved=favoriteIds().includes(x.id),desc=String(x.description||'').trim();
-  return`<article class="product ad-card"><div class="product-img">${x.image_url?`<img src="${esc(x.image_url)}" loading="lazy" alt="${esc(x.title)}">`:'<div class="ad-no-photo">📷<span>Без фото</span></div>'}<span class="badge">${esc(taxonomyLabel(x))}</span><button class="ad-favorite ${saved?'saved':''}" data-ad-fav="${x.id}" aria-label="Сохранить">${saved?'♥':'♡'}</button><span class="ad-time">${esc(timeAgo(x.created_at))}</span></div><div class="product-body"><div class="seller">Продавец · <a href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${esc(x.partner_name||'Участник города')}</a></div><h3>${esc(x.title)}</h3><div class="price">${esc(priceText(x))}</div>${desc?`<div class="ad-description">${esc(desc)}</div>`:''}${facts.length?`<div class="ad-facts">${facts.join('')}</div>`:''}<div class="ad-location">📍 ${esc([x.city,x.address].filter(Boolean).join(', ')||'Город не указан')}</div><div class="product-actions"><a class="primary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Связаться</a><a class="secondary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Профиль</a></div></div></article>`;
+  return`<article class="product ad-card"><div class="product-img">${x.image_url?`<img src="${esc(x.image_url)}" loading="lazy" alt="${esc(x.title)}">`:'<div class="ad-no-photo">📷<span>Без фото</span></div>'}<span class="badge">${esc(taxonomyLabel(x))}</span><button class="ad-favorite ${saved?'saved':''}" data-ad-fav="${x.id}" aria-label="Сохранить">${saved?'♥':'♡'}</button><span class="ad-time">${esc(timeAgo(x.created_at))}</span></div><div class="product-body"><div class="seller">Продавец · <a href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${esc(x.partner_name||'Участник города')}</a></div><h3>${esc(x.title)}</h3><div class="price">${esc(priceText(x))}</div>${desc?`<div class="ad-description">${esc(desc)}</div>`:''}${facts.length?`<div class="ad-facts">${facts.join('')}</div>`:''}<div class="ad-location">📍 ${esc(locationText(x))}</div><div class="product-actions"><a class="primary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Связаться</a><a class="secondary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Профиль</a></div></div></article>`;
 }
 function card(x){
   if(currentSection==='ads')return adCard(x);
   const facts=factList(x);
-  return`<article class="product"><div class="product-img">${x.image_url?`<img src="${esc(x.image_url)}" loading="lazy" alt="${esc(x.title)}">`:'<span class="empty" style="padding:10px;border:0;background:transparent">Нет фото</span>'}<span class="badge">${esc(taxonomyLabel(x))}</span></div><div class="product-body"><div class="seller">${esc(typeLabel[x.marketplace_offer_type]||'Предложение')} · <a href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${esc(x.partner_name||'Участник города')}</a></div><h3>${esc(x.title)}</h3><div class="price">${esc(priceText(x))}</div>${facts.length?`<div class="address">${facts.map(esc).join(' · ')}</div>`:''}<div class="address">${esc([x.city,x.address].filter(Boolean).join(', ')||'Город не указан')}</div><div class="product-actions">${actionHtml(x)}</div></div></article>`;
+  return`<article class="product"><div class="product-img">${x.image_url?`<img src="${esc(x.image_url)}" loading="lazy" alt="${esc(x.title)}">`:'<span class="empty" style="padding:10px;border:0;background:transparent">Нет фото</span>'}<span class="badge">${esc(taxonomyLabel(x))}</span></div><div class="product-body"><div class="seller">${esc(typeLabel[x.marketplace_offer_type]||'Предложение')} · <a href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${esc(x.partner_name||'Участник города')}</a></div><h3>${esc(x.title)}</h3><div class="price">${esc(priceText(x))}</div>${facts.length?`<div class="address">${facts.map(esc).join(' · ')}</div>`:''}<div class="address">${esc(locationText(x))}</div><div class="product-actions">${actionHtml(x)}</div></div></article>`;
 }
 function renderResults(){
   const noun=currentSection==='ads'?'объявлений':'предложений';$('resultCount').textContent=`${shown.length} ${noun}`;$('offersMeta').textContent=`${shown.length} ${noun}`;
@@ -176,16 +186,16 @@ function setupClassifieds(){
   $('adReset').onclick=()=>{['adMinPrice','adMaxPrice'].forEach(id=>$(id).value='');['adCondition','adCity'].forEach(id=>$(id).value='');['adPhoto','adNegotiable','adExchange'].forEach(id=>$(id).checked=false);apply()};
 }
 async function load(){
-  geoContext=window.CUIM_GEO?.get?.()||geoContext;refreshGeoButton();
+  await window.CUIM_GEO?.ready?.catch?.(()=>{});geoContext=window.CUIM_GEO?.get?.()||geoContext;refreshGeoButton();
   const[secR,subR]=await Promise.all([s.from('marketplace_city_sections').select('section_key,slug,title,subtitle,icon_url,icon_fallback,sort_order').eq('active',true).order('sort_order'),s.from('marketplace_city_subcategories').select('section_key,subcategory_key,slug,title,sort_order').eq('active',true).order('sort_order')]);
   if(secR.error||subR.error){$('products').innerHTML=`<div class="empty">Не удалось загрузить структуру каталога.<br>${esc(secR.error?.message||subR.error?.message||'')}</div>`;return}
   sections=(secR.data||[]).filter(x=>x.section_key!=='all');subs=subR.data||[];resolveRoute();
-  const{data,error}=await s.rpc('marketplace_catalog_products_v3',{p_query:null,p_section:currentSection==='all'?null:currentSection,p_subcategory:currentSub||null,p_partner_id:null,p_city_id:geoContext?.city_id||null,p_area_id:geoContext?.area_id||null});
+  const{data,error}=await s.rpc('marketplace_catalog_products_v4',{p_query:null,p_section:currentSection==='all'?null:currentSection,p_subcategory:currentSub||null,p_partner_id:null,p_city_id:geoContext?.city_id||null,p_area_id:geoContext?.area_id||null,p_metro_id:geoContext?.metro_id||null,p_radius_m:Number(geoContext?.radius_m||3000)});
   if(error){$('products').innerHTML=`<div class="empty">Не удалось загрузить каталог.<br>${esc(error.message)}</div>`;return}
   all=data||[];setMeta();renderNavigation();renderSellerFilter();setupClassifieds();apply();
 }
 installGeoButton();
-window.addEventListener('cuim:geo-change',e=>{const next=e.detail||null;if(next?.city_id===geoContext?.city_id&&next?.area_id===geoContext?.area_id){geoContext=next;refreshGeoButton();return}geoContext=next;refreshGeoButton();location.reload()});
+window.addEventListener('cuim:geo-change',e=>{const next=e.detail||null;const same=next?.city_id===geoContext?.city_id&&next?.area_id===geoContext?.area_id&&next?.metro_id===geoContext?.metro_id&&Number(next?.radius_m||3000)===Number(geoContext?.radius_m||3000);geoContext=next;refreshGeoButton();if(!same)location.reload()});
 $('search').oninput=apply;$('searchBtn').onclick=apply;$('sellerFilter').onchange=apply;$('sort').onchange=apply;$('search').onkeydown=e=>{if(e.key==='Enter')apply()};
 const openSide=()=>{$('catalogSidebar').classList.add('open');$('sidebarShade').classList.add('show')},closeSide=()=>{$('catalogSidebar').classList.remove('open');$('sidebarShade').classList.remove('show')};
 $('sidebarOpen').onclick=openSide;$('sidebarClose').onclick=closeSide;$('sidebarShade').onclick=closeSide;
