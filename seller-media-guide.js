@@ -11,14 +11,15 @@
     return '/find-executor.html?'+p.toString();
   }
 
+  function galleryCount(){return Math.max(0,Number(window.CUIM_SELLER_GALLERY?.count?.()||0))}
   function updateState(box){
-    const hasImage=Boolean($('imageUrl')?.value?.trim());
+    const count=galleryCount(),hasImage=count>0||Boolean($('imageUrl')?.value?.trim());
     const status=box.querySelector('[data-media-status]');
     if(status){
       status.className='seller-media-status '+(hasImage?'good':'warn');
-      status.innerHTML=hasImage
-        ?'<b>✓ Обложка указана.</b> Для более понятной карточки рекомендуем добавить инфографику с преимуществами и характеристиками.'
-        :'<b>Добавьте изображение.</b> Карточка без понятной обложки хуже объясняет покупателю, что именно вы предлагаете.';
+      if(!hasImage)status.innerHTML='<b>Добавьте изображение.</b> Карточка без понятной обложки хуже объясняет покупателю, что именно вы предлагаете.';
+      else if(count>=2)status.innerHTML=`<b>✓ В галерее ${count} изображения.</b> Хорошая основа. Используйте обложку и дополнительные слайды, чтобы показать преимущества и важные детали.`;
+      else status.innerHTML='<b>✓ Обложка указана.</b> Рекомендуем добавить ещё изображения или инфографику с преимуществами, характеристиками и примером результата.';
     }
     const request=box.querySelector('[data-infographic-request]');
     if(request)request.href=taskUrl();
@@ -44,7 +45,7 @@
         <div><strong>3. Детали</strong><span>Размеры, характеристики, комплектация, состав или условия выполнения.</span></div>
         <div><strong>4. Пример</strong><span>Покажите использование товара, процесс или результат услуги.</span></div>
       </div>
-      <div class="seller-media-note">Инфографика желательна, но не обязательна для публикации. Она должна дополнять карточку и не вводить покупателя в заблуждение.</div>
+      <div class="seller-media-note">Инфографика желательна, но не обязательна для публикации. Для карточки рекомендуем 2–6 изображений. Они должны дополнять описание и не вводить покупателя в заблуждение.</div>
       <div class="seller-media-actions">
         <a class="btn light" href="/catalog/services/design/?q=${encodeURIComponent('инфографика карточки товара')}" target="_blank" rel="noopener">🎨 Найти исполнителя</a>
         <a class="btn" data-infographic-request href="${esc(taskUrl())}">+ Разместить заявку</a>
@@ -64,9 +65,8 @@
     document.head.appendChild(st);
     image.addEventListener('input',()=>updateState(box));
     $('title')?.addEventListener('input',()=>updateState(box));
-    const idObserver=new MutationObserver(()=>updateState(box));
-    if($('id'))idObserver.observe($('id'),{attributes:true,attributeFilter:['value']});
-    document.addEventListener('click',e=>{if(e.target.closest('[data-edit],#newOffer,#reset'))setTimeout(()=>updateState(box),80)});
+    document.addEventListener('cuim:seller-gallery-change',()=>updateState(box));
+    document.addEventListener('click',e=>{if(e.target.closest('[data-edit],#newOffer,#reset'))setTimeout(()=>updateState(box),120)});
     updateState(box);
     return true;
   }
