@@ -1,0 +1,47 @@
+name: Install product gallery integration
+on:
+  push:
+    paths:
+      - '.github/workflows/install-product-gallery.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connect gallery scripts
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          seller=Path('seller-catalog.html')
+          s=seller.read_text(encoding='utf-8')
+          gallery='<script type="module" src="/seller-gallery.js"></script>'
+          guide='<script src="/seller-media-guide.js"></script>'
+          if gallery not in s:
+              if guide in s:
+                  s=s.replace(guide,gallery+'\n'+guide,1)
+              elif '</body>' in s:
+                  s=s.replace('</body>',gallery+'\n</body>',1)
+              else:
+                  raise SystemExit('seller-catalog.html has no insertion point')
+              seller.write_text(s,encoding='utf-8')
+
+          offer=Path('offer.html')
+          o=offer.read_text(encoding='utf-8')
+          public_gallery='<script type="module" src="/offer-gallery.js"></script>'
+          if public_gallery not in o:
+              if '</body>' not in o:
+                  raise SystemExit('offer.html has no </body>')
+              o=o.replace('</body>',public_gallery+'\n</body>',1)
+              offer.write_text(o,encoding='utf-8')
+          PY
+      - name: Commit gallery integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then exit 0; fi
+          git add seller-catalog.html offer.html
+          git commit -m "Enable multi-image product galleries"
+          git push
