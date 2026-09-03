@@ -49,5 +49,6 @@ async function loadSimilar(){const g=localGeo()||{};const{data,error}=await s.rp
 async function load(){updateCart();await auth();if(!id){$('app').innerHTML='<div class="error"><h1>Предложение не указано</h1><p>Вернитесь в каталог и выберите товар или услугу.</p><a class="btn" href="/catalog/">Открыть каталог</a></div>';$('mobileBar').style.display='none';return}const{data,error}=await s.rpc('marketplace_public_product',{p_product_id:id});if(error||!data?.length){$('app').innerHTML=`<div class="error"><h1>Предложение недоступно</h1><p>${esc(error?.message||'Возможно, товар снят с публикации или продавец временно отключил профиль.')}</p><a class="btn" href="/catalog/">Вернуться в каталог</a></div>`;$('mobileBar').style.display='none';return}item=data[0];render()}
 load();
 </script>
+<script type="module" src="/offer-gallery.js"></script>
 </body>
 </html>
