@@ -27,7 +27,7 @@ const FALLBACK={
   updated_at:new Date().toISOString()
 };
 
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const pin=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg>`;
 const metroIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 19 3-14h8l3 14M7 15h10M8 9h8M6 19h12M9 19l-2 3m8-3 2 3"/></svg>`;
 
@@ -376,6 +376,18 @@ async function save(){
   document.getElementById('cuimGeoModal')?.classList.remove('show');
 }
 
+function applyResolvedArea(found){
+  if(found?.area_id){
+    selectedAdmin=null;
+    selectedArea=directAreas.find(x=>x.id===found.area_id)||null;
+    return;
+  }
+  if(found?.admin_id){
+    const a=admins.find(x=>x.id===found.admin_id);
+    if(a)return chooseAdmin(a).then(()=>{const d=districts.find(x=>x.id===found.district_id);if(d)selectedArea=d});
+  }
+}
+
 async function locate(){
   const btn=document.getElementById('cuimGeoLocate');
   const text=btn?.querySelector('span');
@@ -383,7 +395,7 @@ async function locate(){
   if(btn)btn.disabled=true;if(text)text.textContent='Определяем ближайший рынок…';
   navigator.geolocation.getCurrentPosition(async pos=>{
     try{
-      const{data,error}=await s.rpc('marketplace_geo_resolve_point',{p_lat:pos.coords.latitude,p_lng:pos.coords.longitude});
+      const{data,error}=await s.rpc('marketplace_geo_resolve_point_v2',{p_lat:pos.coords.latitude,p_lng:pos.coords.longitude});
       if(error)throw error;
       const found=data?.[0];
       if(!found?.city_id){if(text)text.textContent='Пока нет активного рынка рядом';return}
@@ -391,14 +403,12 @@ async function locate(){
       const foundCity=cities.find(x=>x.id===found.city_id);
       if(!foundCity){if(text)text.textContent='Этот город пока не активен';return}
       await chooseCity(foundCity);
-      if(found.admin_id){
-        const a=admins.find(x=>x.id===found.admin_id);
-        if(a){await chooseAdmin(a);const d=districts.find(x=>x.id===found.district_id);if(d)selectedArea=d}
-      }
+      await applyResolvedArea(found);
       selectedMetro=found.metro_id?metros.find(x=>x.id===found.metro_id)||null:null;
       selectedRadius=3000;
       renderAll();
-      if(text)text.textContent=found.district_name?`${found.city_name} · ${found.district_name}`:found.city_name;
+      const resolvedName=found.area_name||found.district_name||found.city_name;
+      if(text)text.textContent=resolvedName===found.city_name?found.city_name:`${found.city_name} · ${resolvedName}`;
     }catch{if(text)text.textContent='Не удалось определить локацию'}
     finally{if(btn)btn.disabled=false}
   },()=>{if(btn)btn.disabled=false;if(text)text.textContent='Доступ к геопозиции не предоставлен'},{enableHighAccuracy:false,timeout:8000,maximumAge:300000});
@@ -428,7 +438,7 @@ async function autoDetectLocation(){
     try{
       const current=window.CUIM_GEO?.get?.()||context;
       if(current.location_source==='manual'||current.updated_at!==startedAt){writeAutoState({done:true,status:'cancelled_by_user',updated_at:new Date().toISOString()});return}
-      const{data,error}=await s.rpc('marketplace_geo_resolve_point',{p_lat:pos.coords.latitude,p_lng:pos.coords.longitude});
+      const{data,error}=await s.rpc('marketplace_geo_resolve_point_v2',{p_lat:pos.coords.latitude,p_lng:pos.coords.longitude});
       if(error)throw error;
       const found=data?.[0];
       if(!found?.city_id){writeAutoState({done:true,status:'outside_active_market',updated_at:new Date().toISOString()});return}
@@ -438,10 +448,7 @@ async function autoDetectLocation(){
       const afterLookup=window.CUIM_GEO?.get?.()||context;
       if(afterLookup.location_source==='manual'||afterLookup.updated_at!==startedAt){writeAutoState({done:true,status:'cancelled_by_user',updated_at:new Date().toISOString()});return}
       await chooseCity(foundCity);
-      if(found.admin_id){
-        const a=admins.find(x=>x.id===found.admin_id);
-        if(a){await chooseAdmin(a);const d=districts.find(x=>x.id===found.district_id);if(d)selectedArea=d}
-      }
+      await applyResolvedArea(found);
       selectedMetro=found.metro_id?metros.find(x=>x.id===found.metro_id)||null:null;
       selectedRadius=3000;
       context={
@@ -468,7 +475,7 @@ async function autoDetectLocation(){
         updated_at:new Date().toISOString()
       };
       persist(context);renderAll();emit();
-      writeAutoState({done:true,status:'applied',city_slug:foundCity.slug,updated_at:new Date().toISOString()});
+      writeAutoState({done:true,status:'applied',city_slug:foundCity.slug,area_id:context.area_id||null,updated_at:new Date().toISOString()});
       try{
         const{data:{user}}=await s.auth.getUser();
         if(user&&context.city_id)await s.rpc('marketplace_set_my_geo_context_v2',{p_city_id:context.city_id,p_area_id:context.area_id,p_metro_id:context.metro_id,p_radius_m:context.radius_m});
