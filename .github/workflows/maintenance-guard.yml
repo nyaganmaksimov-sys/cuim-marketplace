@@ -1,0 +1,60 @@
+name: Install maintenance guard
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add maintenance guard to public pages
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          guard = '<script src="/maintenance-guard.js"></script>'
+          changed = []
+          for path in Path('.').rglob('*.html'):
+              parts = path.parts
+              if 'admin' in parts or '.git' in parts:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              if 'maintenance-guard.js' in text or '</head>' not in text.lower():
+                  continue
+              lower = text.lower()
+              idx = lower.find('</head>')
+              text = text[:idx] + guard + '\n' + text[idx:]
+              path.write_text(text, encoding='utf-8')
+              changed.append(str(path))
+
+          admin = Path('admin/index.html')
+          if admin.exists():
+              text = admin.read_text(encoding='utf-8')
+              if './maintenance.html' not in text:
+                  needle = '<button class="nav-link" data-tab="settings"><span class="nav-ico">⚙</span>Настройки</button>'
+                  replacement = needle + '<a class="nav-link" href="./maintenance.html"><span class="nav-ico">🛠</span>Техработы</a>'
+                  if needle in text:
+                      text = text.replace(needle, replacement, 1)
+                      admin.write_text(text, encoding='utf-8')
+                      changed.append(str(admin))
+
+          print('Updated:', ', '.join(changed) if changed else 'nothing')
+          PY
+      - name: Commit generated changes
+        run: |
+          if git diff --quiet; then
+            echo "No changes"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .
+          git commit -m "Apply marketplace maintenance guard"
+          git push
