@@ -1,0 +1,38 @@
+name: Fix offer card actions
+on:
+  push:
+    paths:
+      - '.github/workflows/offer-card-actions.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Make card actions offer-type aware
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p=Path('index.html')
+          s=p.read_text(encoding='utf-8')
+          old="function card(x){return`<article class=\"product\" data-open=\"${x.id}\"><div class=\"product-img\">${x.image_url?`<img src=\"${esc(x.image_url)}\" loading=\"lazy\" alt=\"${esc(x.title)}\">`:'<span class=\"muted\">Нет изображения</span>'}<span class=\"badge\">${esc(x.category||'Предложение')}</span></div><div class=\"body\"><a class=\"seller-link\" href=\"${sellerUrl(x.partner_id)}\" onclick=\"event.stopPropagation()\">${esc(x.partner_name||'Участник города')}</a><h3>${esc(x.title)}</h3><div class=\"price-row\"><div class=\"price\">${x.price==null?'Цена по запросу':money(x.price)}</div>${x.unit?`<span class=\"unit\">/ ${esc(x.unit)}</span>`:''}</div><div class=\"product-actions\"><button class=\"btn\" data-cart=\"${x.id}\">В корзину</button><a class=\"btn light\" href=\"${sellerUrl(x.partner_id)}\" onclick=\"event.stopPropagation()\">Компания</a></div><div class=\"more\"><span>Подробнее</span><span>→</span></div></div></article>`}"
+          new="function homeAction(x){const t=x.marketplace_offer_type;if(['PRODUCT','FOOD'].includes(t))return`<button class=\"btn\" data-cart=\"${x.id}\">В корзину</button><a class=\"btn light\" href=\"./offer.html?id=${encodeURIComponent(x.id)}\" onclick=\"event.stopPropagation()\">Подробнее</a>`;const label={SERVICE:'Заказать',JOB:'Откликнуться',AUTO:'Связаться',EVENT:'Подробнее',AD:'Подробнее'}[t]||'Подробнее';return`<a class=\"btn\" href=\"./offer.html?id=${encodeURIComponent(x.id)}\" onclick=\"event.stopPropagation()\">${label}</a><a class=\"btn light\" href=\"${sellerUrl(x.partner_id)}\" onclick=\"event.stopPropagation()\">Компания</a>`}\nfunction card(x){return`<article class=\"product\" data-open=\"${x.id}\"><div class=\"product-img\">${x.image_url?`<img src=\"${esc(x.image_url)}\" loading=\"lazy\" alt=\"${esc(x.title)}\">`:'<span class=\"muted\">Нет изображения</span>'}<span class=\"badge\">${esc(x.category||'Предложение')}</span></div><div class=\"body\"><a class=\"seller-link\" href=\"${sellerUrl(x.partner_id)}\" onclick=\"event.stopPropagation()\">${esc(x.partner_name||'Участник города')}</a><h3>${esc(x.title)}</h3><div class=\"price-row\"><div class=\"price\">${x.price==null?'Цена по запросу':money(x.price)}</div>${x.unit?`<span class=\"unit\">/ ${esc(x.unit)}</span>`:''}</div><div class=\"product-actions\">${homeAction(x)}</div><div class=\"more\"><span>Подробнее</span><span>→</span></div></div></article>`}"
+          if old not in s: raise SystemExit('index card pattern missing')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+
+          p=Path('seller.html')
+          s=p.read_text(encoding='utf-8')
+          old="function card(x){return`<article class=\"product\" data-offer=\"${x.id}\"><div class=\"product-img\">${x.image_url?`<img src=\"${esc(x.image_url)}\" loading=\"lazy\" alt=\"${esc(x.title)}\">`:'<span class=\"muted\">Нет изображения</span>'}<span class=\"cat\">${esc(x.category||'Предложение')}</span></div><div class=\"body\"><div class=\"label\">${esc(x.partner_name||'Участник города')}</div><h3>${esc(x.title)}</h3><div class=\"price\">${x.price==null?'Цена по запросу':money(x.price)} ${x.unit?`<span class=\"unit\">/ ${esc(x.unit)}</span>`:''}</div><div class=\"product-actions\"><button class=\"btn\" data-cart=\"${x.id}\">В корзину</button><button class=\"btn light\" data-ask=\"${x.id}\">Написать</button></div></div></article>`}"
+          new="function sellerCardActions(x){const t=x.marketplace_offer_type;if(['PRODUCT','FOOD'].includes(t))return`<button class=\"btn\" data-cart=\"${x.id}\">В корзину</button><a class=\"btn light\" href=\"/offer.html?id=${encodeURIComponent(x.id)}\">Подробнее</a>`;const label={SERVICE:'Заказать',JOB:'Откликнуться',AUTO:'Связаться',EVENT:'Подробнее',AD:'Связаться'}[t]||'Подробнее';return`<a class=\"btn\" href=\"/offer.html?id=${encodeURIComponent(x.id)}\">${label}</a><button class=\"btn light\" data-ask=\"${x.id}\">Написать</button>`}\nfunction card(x){return`<article class=\"product\" data-offer=\"${x.id}\"><div class=\"product-img\">${x.image_url?`<img src=\"${esc(x.image_url)}\" loading=\"lazy\" alt=\"${esc(x.title)}\">`:'<span class=\"muted\">Нет изображения</span>'}<span class=\"cat\">${esc(x.category||'Предложение')}</span></div><div class=\"body\"><div class=\"label\">${esc(x.partner_name||'Участник города')}</div><h3>${esc(x.title)}</h3><div class=\"price\">${x.price==null?'Цена по запросу':money(x.price)} ${x.unit?`<span class=\"unit\">/ ${esc(x.unit)}</span>`:''}</div><div class=\"product-actions\">${sellerCardActions(x)}</div></div></article>`}"
+          if old not in s: raise SystemExit('seller card pattern missing')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html seller.html
+          git commit -m "Make marketplace card actions type-aware"
+          git push
