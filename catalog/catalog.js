@@ -135,9 +135,9 @@ function factList(x){
 }
 function actionHtml(x){
   const t=x.marketplace_offer_type;
-  if(['PRODUCT','FOOD'].includes(t))return`<button class="primary" data-cart="${x.id}">В корзину</button><a class="secondary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Компания</a>`;
+  if(['PRODUCT','FOOD'].includes(t))return`<button class="primary" data-cart="${x.id}">В корзину</button><a class="secondary" href="/offer.html?id=${encodeURIComponent(x.id)}">Подробнее</a>`;
   const label={SERVICE:'Заказать',JOB:'Откликнуться',AUTO:'Связаться',AD:'Связаться',EVENT:'Подробнее'}[t]||'Подробнее';
-  return`<a class="primary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${label}</a><a class="secondary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Компания</a>`;
+  return`<a class="primary" href="/offer.html?id=${encodeURIComponent(x.id)}">${label}</a><a class="secondary" href="/seller.html?id=${encodeURIComponent(x.partner_id)}">Компания</a>`;
 }
 function timeAgo(v){
   if(!v)return'Недавно';const d=new Date(v);if(Number.isNaN(d.getTime()))return'Недавно';const days=Math.floor((Date.now()-d.getTime())/86400000);if(days<=0)return'Сегодня';if(days===1)return'Вчера';if(days<7)return`${days} дн. назад`;return d.toLocaleDateString('ru-RU',{day:'2-digit',month:'short'});
@@ -156,7 +156,7 @@ function adCard(x){
 function card(x){
   if(currentSection==='ads')return adCard(x);
   const facts=factList(x);
-  return`<article class="product"><div class="product-img">${x.image_url?`<img src="${esc(x.image_url)}" loading="lazy" alt="${esc(x.title)}">`:'<span class="empty" style="padding:10px;border:0;background:transparent">Нет фото</span>'}<span class="badge">${esc(taxonomyLabel(x))}</span></div><div class="product-body"><div class="seller">${esc(typeLabel[x.marketplace_offer_type]||'Предложение')} · <a href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${esc(x.partner_name||'Участник города')}</a></div><h3>${esc(x.title)}</h3><div class="price">${esc(priceText(x))}</div>${facts.length?`<div class="address">${facts.map(esc).join(' · ')}</div>`:''}<div class="address">${esc(locationText(x))}</div><div class="product-actions">${actionHtml(x)}</div></div></article>`;
+  return`<article class="product" data-offer="${x.id}"><div class="product-img">${x.image_url?`<img src="${esc(x.image_url)}" loading="lazy" alt="${esc(x.title)}">`:'<span class="empty" style="padding:10px;border:0;background:transparent">Нет фото</span>'}<span class="badge">${esc(taxonomyLabel(x))}</span></div><div class="product-body"><div class="seller">${esc(typeLabel[x.marketplace_offer_type]||'Предложение')} · <a href="/seller.html?id=${encodeURIComponent(x.partner_id)}">${esc(x.partner_name||'Участник города')}</a></div><h3>${esc(x.title)}</h3><div class="price">${esc(priceText(x))}</div>${facts.length?`<div class="address">${facts.map(esc).join(' · ')}</div>`:''}<div class="address">${esc(locationText(x))}</div><div class="product-actions">${actionHtml(x)}</div></div></article>`;
 }
 function renderResults(){
   const noun=currentSection==='ads'?'объявлений':'предложений';$('resultCount').textContent=`${shown.length} ${noun}`;$('offersMeta').textContent=`${shown.length} ${noun}`;
@@ -167,9 +167,10 @@ function renderResults(){
   else $('products').innerHTML='<div class="empty"><b>В этой категории пока нет предложений.</b><br>Страница готова — новые публикации появятся здесь после назначения категории.</div>';
   $('companies').innerHTML=companies.length?companies.slice(0,12).map(x=>`<a class="company" href="/seller.html?id=${encodeURIComponent(x.id)}"><div class="avatar">${esc(String(x.name).split(/\s+/).slice(0,2).map(v=>v[0]).join('').toUpperCase())}</div><div><b>${esc(x.name)}</b><span>${x.count} предложений${x.city?` · ${esc(x.city)}`:''}</span></div></a>`).join(''):'<div class="empty">Компании появятся здесь вместе с предложениями.</div>';
   $('companiesBlock').style.display=currentSection==='ads'?'none':companies.length?'block':'none';
-  bindCart();bindAdFavorites();
+  bindOfferCards();bindCart();bindAdFavorites();
 }
-function bindCart(){document.querySelectorAll('[data-cart]').forEach(b=>b.onclick=()=>{const key='cuim-cart:v1';let a=[];try{a=JSON.parse(localStorage.getItem(key)||'[]')}catch{}const f=a.find(v=>v.product_id===b.dataset.cart);f?f.quantity++:a.push({product_id:b.dataset.cart,quantity:1});localStorage.setItem(key,JSON.stringify(a));b.textContent='Добавлено ✓';setTimeout(()=>b.textContent='В корзину',1100)})}
+function bindOfferCards(){document.querySelectorAll('[data-offer]').forEach(el=>el.onclick=e=>{if(e.target.closest('a,button'))return;location.href='/offer.html?id='+encodeURIComponent(el.dataset.offer)})}
+function bindCart(){document.querySelectorAll('[data-cart]').forEach(b=>b.onclick=e=>{e.stopPropagation();const key='cuim-cart:v1';let a=[];try{a=JSON.parse(localStorage.getItem(key)||'[]')}catch{}const f=a.find(v=>v.product_id===b.dataset.cart);f?f.quantity++:a.push({product_id:b.dataset.cart,quantity:1});localStorage.setItem(key,JSON.stringify(a));b.textContent='Добавлено ✓';setTimeout(()=>b.textContent='В корзину',1100)})}
 function bindAdFavorites(){document.querySelectorAll('[data-ad-fav]').forEach(b=>b.onclick=()=>{let a=favoriteIds();const id=b.dataset.adFav;if(a.includes(id))a=a.filter(v=>v!==id);else a.push(id);localStorage.setItem('cuim-classified-favorites',JSON.stringify(a));b.classList.toggle('saved',a.includes(id));b.textContent=a.includes(id)?'♥':'♡'})}
 function renderSellerFilter(){const g=new Map;for(const x of all)if(x.partner_id&&!g.has(x.partner_id))g.set(x.partner_id,x.partner_name||'Компания');$('sellerFilter').innerHTML=`<option value="">${currentSection==='ads'?'Все продавцы':'Все компании'}</option>`+[...g.entries()].sort((a,b)=>a[1].localeCompare(b[1],'ru')).map(([id,n])=>`<option value="${esc(id)}">${esc(n)}</option>`).join('')}
 function setupClassifieds(){
