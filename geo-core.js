@@ -27,7 +27,7 @@ const FALLBACK={
   updated_at:new Date().toISOString()
 };
 
-const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
 const pin=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.6"/></svg>`;
 const metroIcon=`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 19 3-14h8l3 14M7 15h10M8 9h8M6 19h12M9 19l-2 3m8-3 2 3"/></svg>`;
 
@@ -362,6 +362,7 @@ async function save(){
     metro_name:selectedMetro?.name||null,
     radius_m:selectedMetro?selectedRadius:3000,
     market_radius_m:marketRadiusFor(city),
+    location_source:'manual',
     updated_at:new Date().toISOString()
   };
   persist(context);emit();
@@ -414,8 +415,71 @@ async function hydrate(){
   readyResolve?.(context);
 }
 
+const AUTO_KEY='cuim-geo-auto:v1';
+function readAutoState(){try{return JSON.parse(localStorage.getItem(AUTO_KEY)||'null')}catch{return null}}
+function writeAutoState(v){try{localStorage.setItem(AUTO_KEY,JSON.stringify(v))}catch{}}
+async function autoDetectLocation(){
+  if(!navigator.geolocation)return;
+  if(context.location_source==='manual')return;
+  if(readAutoState()?.done)return;
+  const startedAt=context.updated_at;
+  writeAutoState({done:true,status:'requested',requested_at:new Date().toISOString()});
+  navigator.geolocation.getCurrentPosition(async pos=>{
+    try{
+      const current=window.CUIM_GEO?.get?.()||context;
+      if(current.location_source==='manual'||current.updated_at!==startedAt){writeAutoState({done:true,status:'cancelled_by_user',updated_at:new Date().toISOString()});return}
+      const{data,error}=await s.rpc('marketplace_geo_resolve_point',{p_lat:pos.coords.latitude,p_lng:pos.coords.longitude});
+      if(error)throw error;
+      const found=data?.[0];
+      if(!found?.city_id){writeAutoState({done:true,status:'outside_active_market',updated_at:new Date().toISOString()});return}
+      await ensureCities();
+      const foundCity=cities.find(x=>x.id===found.city_id);
+      if(!foundCity){writeAutoState({done:true,status:'inactive_city',updated_at:new Date().toISOString()});return}
+      const afterLookup=window.CUIM_GEO?.get?.()||context;
+      if(afterLookup.location_source==='manual'||afterLookup.updated_at!==startedAt){writeAutoState({done:true,status:'cancelled_by_user',updated_at:new Date().toISOString()});return}
+      await chooseCity(foundCity);
+      if(found.admin_id){
+        const a=admins.find(x=>x.id===found.admin_id);
+        if(a){await chooseAdmin(a);const d=districts.find(x=>x.id===found.district_id);if(d)selectedArea=d}
+      }
+      selectedMetro=found.metro_id?metros.find(x=>x.id===found.metro_id)||null:null;
+      selectedRadius=3000;
+      context={
+        ...context,
+        version:3,
+        city_id:foundCity.id,
+        city_name:foundCity.name,
+        city_slug:foundCity.slug,
+        region_name:foundCity.region_name||null,
+        timezone:foundCity.timezone||context.timezone,
+        admin_id:selectedAdmin?.id||null,
+        admin_name:selectedAdmin?.name||null,
+        admin_short_name:selectedAdmin?.short_name||null,
+        area_id:selectedArea?.id||null,
+        area_name:selectedArea?.name||null,
+        area_short_name:selectedArea?.short_name||null,
+        area_type:selectedArea?.place_type||null,
+        metro_id:selectedMetro?.id||null,
+        metro_name:selectedMetro?.name||null,
+        radius_m:selectedMetro?selectedRadius:3000,
+        market_radius_m:marketRadiusFor(foundCity),
+        location_source:'auto',
+        auto_detected_at:new Date().toISOString(),
+        updated_at:new Date().toISOString()
+      };
+      persist(context);renderAll();emit();
+      writeAutoState({done:true,status:'applied',city_slug:foundCity.slug,updated_at:new Date().toISOString()});
+      try{
+        const{data:{user}}=await s.auth.getUser();
+        if(user&&context.city_id)await s.rpc('marketplace_set_my_geo_context_v2',{p_city_id:context.city_id,p_area_id:context.area_id,p_metro_id:context.metro_id,p_radius_m:context.radius_m});
+      }catch{}
+    }catch{writeAutoState({done:true,status:'error',updated_at:new Date().toISOString()})}
+  },err=>writeAutoState({done:true,status:err?.code===1?'denied':'unavailable',updated_at:new Date().toISOString()}),{enableHighAccuracy:false,timeout:8000,maximumAge:300000});
+}
+
 installStyle();
 installModal();
 applyContext();
 window.CUIM_GEO={get:()=>context,open,set:v=>{context={...context,...v,version:3};persist(context);emit()},ready};
 hydrate();
+ready.then(()=>setTimeout(autoDetectLocation,250)).catch(()=>{});
