@@ -3,6 +3,7 @@ on:
   push:
     paths:
       - '.github/workflows/fix-geo-city-bootstrap.yml'
+      - '.github/scripts/fix_geo_city_bootstrap.py'
 permissions:
   contents: write
 jobs:
@@ -16,7 +17,7 @@ jobs:
           node --check geo-core.js
           grep -q 'function chooseInitialCity()' geo-core.js
           test "$(grep -c '^async function chooseCity(next' geo-core.js)" = "1"
-          test "$(grep -c 'chooseInitialCity();' geo-core.js)" = "2"
+          test "$(grep -o 'chooseInitialCity()' geo-core.js | wc -l)" = "3"
           grep -q "cities=LOCAL_CITIES.map" geo-core.js
       - name: Commit fix
         run: |
