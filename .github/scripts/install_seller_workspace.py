@@ -24,3 +24,9 @@ if old in s and 'href="./seller-orders.html">Заказы продавца</a>' 
 elif 'href="./seller-orders.html">Заказы продавца</a>' not in s:
     raise SystemExit('account seller action marker not found')
 p.write_text(s,encoding='utf-8')
+
+# Buyer order page: keep the visible label aligned with the database status vocabulary.
+p=root/'order.html'
+s=p.read_text(encoding='utf-8')
+s=s.replace("IN_WORK:'В работе'","IN_PROGRESS:'В работе'")
+p.write_text(s,encoding='utf-8')
