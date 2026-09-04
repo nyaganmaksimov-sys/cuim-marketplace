@@ -1,0 +1,29 @@
+name: Fix geo city bootstrap
+on:
+  push:
+    paths:
+      - '.github/workflows/fix-geo-city-bootstrap.yml'
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python .github/scripts/fix_geo_city_bootstrap.py
+      - name: Check geo-core
+        run: |
+          node --check geo-core.js
+          grep -q 'function chooseInitialCity()' geo-core.js
+          test "$(grep -c '^async function chooseCity(next' geo-core.js)" = "1"
+          test "$(grep -c 'chooseInitialCity();' geo-core.js)" = "2"
+          grep -q "cities=LOCAL_CITIES.map" geo-core.js
+      - name: Commit fix
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add geo-core.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Fix mobile city selector bootstrap'
+            git push
+          fi
