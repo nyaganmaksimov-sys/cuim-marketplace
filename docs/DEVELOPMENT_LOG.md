@@ -20,7 +20,7 @@
 - мелкие коммиты могут объединяться в один этап;
 - ежедневный аудит проверяет пропущенные изменения.
 
-**Последняя учтённая продуктовая точка:** `9b3fb9ed82083c72a973c4bd4565feeebded7cc5`
+**Последняя учтённая продуктовая точка:** `fa5fe6f1d5b003eac0aa6206512dce87e0245c40`
 
 ---
 
@@ -610,6 +610,186 @@
 - фактические Supabase-миграции сверены с историей БД;
 - дубликатов ранее учтённых этапов не добавлено;
 - новая контрольная точка журнала: `9b3fb9ed82083c72a973c4bd4565feeebded7cc5`.
+
+---
+
+# 14. Журнал изменений после точки `9b3fb9e`
+
+## 04.09.2026 — явные статусы наличия и единые карточки товара
+
+**Статус:** DONE  
+**Подсистема:** marketplace / catalog / cart / frontend
+
+Что сделано:
+
+- введены явные состояния наличия `IN_STOCK / LOW_STOCK / ON_ORDER / OUT_OF_STOCK`;
+- при наличии явного статуса он берётся из `marketplace_details.stock_status`, при его отсутствии сохраняется совместимый fallback по `quantity`;
+- корзина показывает «В наличии», «Осталось N», «Под заказ», «Нет в наличии» и ограничивает количество по доступному остатку;
+- создан общий `marketplace-card-ui.js`, подключённый к главной, каталогу и странице продавца;
+- карточки получили единый слой отображения и действий без копирования логики между витринами.
+
+Техническое решение: отдельная колонка для статуса не вводилась — состояние хранится в уже типизированном JSON `marketplace_details`, поэтому схема товара не ломалась.
+
+Коммиты:
+
+- `8504dd3` — Add explicit marketplace stock statuses;
+- `bf26181` — Add marketplace product card UI enhancer;
+- `5bfca09` — Upgrade marketplace product cards.
+
+Проверка: фактический код `cart.html` содержит четыре состояния и fallback, а `marketplace-card-ui.js` подключён в `index.html`, `catalog/catalog.js` и `seller.html`.
+
+## 04.09.2026 — избранное, подтверждённые отзывы и рабочее место продавца
+
+**Статус:** DONE  
+**Подсистема:** marketplace / account / reviews / seller / orders / database
+
+Что сделано:
+
+- добавлены клиент избранного и отдельная `/favorites.html`, включая доступ с мобильного интерфейса;
+- отзывы о товарах связаны с реальным заказом и получили сценарий подтверждённого отзыва;
+- продавец получил отдельные `/seller-orders.html` и `/seller-reviews.html`;
+- статусы заказов и допустимые переходы выровнены между покупателем и продавцом;
+- продавец может видеть сводку отзывов и отвечать на них;
+- добавлены уведомления продавцу о заказах и отзывах.
+
+Миграции:
+
+- `marketplace_verified_product_reviews`;
+- `marketplace_favorites_reviews_indexes`;
+- `seller_orders_reviews_workspace`;
+- `marketplace_order_status_alignment`;
+- `seller_order_status_transition_compatibility`;
+- `seller_order_ready_cancel_alignment`;
+- `seller_order_review_notifications`.
+
+Ключевые коммиты: `923a2b3`, `dd4b1c3`, `cacaf83`, `df2db7a`, `4cf7c3b`, `62df21b`, `a608a20`, `ad50b22`.
+
+Проверка: в фактической БД присутствуют RPC `marketplace_submit_product_review`, `marketplace_my_order_reviews`, `marketplace_partner_reviews`, `marketplace_partner_review_summary` и `marketplace_reply_product_review`.
+
+## 04.09.2026 — уведомления продавца, background push, атомарное сохранение и резервирование остатков
+
+**Статус:** DONE  
+**Подсистема:** seller / notifications / push / checkout / inventory / database
+
+Что сделано:
+
+- продавец получил attention-индикаторы и переходы из уведомлений к нужному заказу/отзыву;
+- добавлен service worker и background push для продавца;
+- сохранение предложения переведено на атомарный RPC `marketplace_partner_save_offer(p_offer jsonb)` вместо набора независимых клиентских записей;
+- checkout получил серверное резервирование остатков;
+- отмена заказа возвращает резерв и синхронизирует состояние доставки;
+- сообщения чата формируют связанные уведомления.
+
+Миграции:
+
+- `seller_background_push_v1`;
+- `marketplace_partner_offer_save_v4b`;
+- `chat_message_notifications`;
+- `checkout_stock_reservation_v4`;
+- `marketplace_cancel_restock_and_delivery_sync`.
+
+Ключевые коммиты: `a9c60a2`, `ee27dda`, `1b00158`, `dde80f0`, `725a0dc`, `27d4756`, `7de5497`.
+
+Проверка: атомарный RPC и push-RPC продавца присутствуют в текущей БД; одноразовые installer/workflow после применения удалены отдельными cleanup-коммитами.
+
+## 04.09.2026 — чат, вложения Google Drive и внутренний контур сотрудников
+
+**Статус:** APPLIED / BACKEND  
+**Подсистема:** chat / drive / staff / admin / database / security
+
+Фактически применены миграции:
+
+- `chat_drive_attachments`, `chat_drive_attachment_constraints`, `chat_drive_attachment_cleanup_guard`, `chat_drive_attachment_message_index`;
+- `google_drive_oauth_connection`, `google_drive_connection_service_table`, `remove_unused_private_drive_connection`;
+- `staff_self_registration`, `staff_department_and_position`, `staff_departments_positions_management`, `lock_down_staff_admin_rpcs`, `optimize_staff_structure_indexes`, `staff_admin_edge_service_actions`;
+- `preserve_chat_attachments_on_staff_delete`, `private_staff_direct_chats`;
+- `chat_message_edit_and_delete_modes`, `harden_chat_message_table_privileges`;
+- `chat_push_subscriptions`, `chat_push_hook_secret_helper`, `chat_push_message_trigger`;
+- `staff_invitation_links`, `partner_invitation_links`.
+
+Что изменено:
+
+- чат получил модель вложений Google Drive, ограничения, индекс и guard очистки;
+- удаление сотрудника не должно уничтожать историю вложений в сообщениях;
+- Google Drive connection вынесена в сервисную таблицу, неиспользуемый приватный вариант удалён;
+- создана самостоятельная регистрация сотрудников, структура отделов/должностей и административные операции управления ими;
+- admin-RPC этого контура отдельно ограничивались миграцией `lock_down_staff_admin_rpcs`;
+- появились приватные direct chats сотрудников, режимы редактирования/скрытия/удаления сообщений и усиление прямых table privileges;
+- добавлен backend Web Push для чата;
+- добавлены токенизированные приглашения сотрудников и партнёров; в БД присутствуют `consume_staff_invite_system` и `consume_partner_invite_system`.
+
+Проверка: миграции присутствуют в production-истории Supabase. На момент этого аудита для части последних backend-only изменений отдельного frontend-коммита в репозитории ещё нет, поэтому им намеренно не приписан SHA.
+
+## 04.09.2026 — ЦУИМ Доставка v2: кабинет курьера, тарифы, выплаты и live tracking
+
+**Статус:** DONE / SECURITY FOLLOW-UP OPEN  
+**Подсистема:** delivery / courier / seller / admin / realtime / push / geo / database
+
+Что сделано:
+
+- создан административный раздел доставки и настройки тарифов;
+- добавлен кабинет курьера `/courier.html`, onboarding и управление доступностью;
+- добавлена страница доставки продавца `/seller-delivery.html` и ссылки на неё из рабочего интерфейса;
+- добавлены тарифный quote для продавца, выплаты и история выплат курьера;
+- добавлены фоновые push-уведомления курьеру;
+- продавец может создавать и отменять courier offer;
+- добавлена live-геолокация курьера, передача координат в заказ покупателя и обновление интерфейса доставки;
+- одноразовые workflow/installer для внедрения после успешной установки удалены, продуктовые файлы при этом сохранены.
+
+Миграции:
+
+- `delivery_department_v2`;
+- `partner_cancel_courier_offer`;
+- `delay_fresh_chat_notification_read`;
+- `courier_background_push_v2`;
+- `delivery_tariffs_and_courier_payouts`;
+- `partner_delivery_auto_tariff`;
+- `courier_live_location`;
+- `grant_authenticated_notifications_access`.
+
+Ключевые коммиты:
+
+- `82ca45a` — Add delivery department dashboard;
+- `70359cc` — Add courier cabinet and onboarding;
+- `dbb8760` — Add seller delivery management page;
+- `120d718`, `6bca38d` — Link/wire delivery management pages;
+- `7622da6` — Add delivery tariffs and courier payouts settings;
+- `86a3f9d` — Add background push controls for couriers;
+- `76cc904` — Add delivery tariff quote helper for sellers;
+- `229a95b` — Show courier payout history in courier cabinet;
+- `44bbbcc` — Connect delivery tariffs payouts and courier push;
+- `e765ddd`, `8f040f3`, `d797a29`, `7d07abb` — live courier location от курьера до заказа клиента;
+- `fa5fe6f` — cleanup разового workflow live tracking; текущая продуктовая контрольная точка.
+
+Проверка:
+
+- в production БД присутствуют `courier_delivery_quote`, `courier_my_deliveries_v2`, `courier_my_payouts`, `courier_update_delivery_location`, `partner_delivery_live_location`, `marketplace_my_delivery_live_location`, manager/partner courier RPC;
+- Git-диапазон `9b3fb9e..main` на момент проверки составляет **76 коммитов** и затрагивает **32 файла/пути**;
+- текущая продуктовая точка репозитория: `fa5fe6f1d5b003eac0aa6206512dce87e0245c40`.
+
+### Security Advisor после новых delivery-миграций
+
+Свежий Security Advisor выявил новый открытый технический долг, который **не считается закрытым**:
+
+- `courier_invites` — RLS выключен;
+- `courier_delivery_events` — RLS выключен;
+- `courier_delivery_tariffs` — RLS выключен;
+- `courier_payout_entries` — RLS выключен;
+- `courier_accrue_payout_on_delivery()` остаётся `SECURITY DEFINER` с EXECUTE для `anon`;
+- `courier_dispatch_open_offer_push()` остаётся `SECURITY DEFINER` с EXECUTE для `anon`;
+- leaked-password protection Supabase Auth всё ещё выключена;
+- часть старых/намеренно публичных `SECURITY DEFINER` предупреждений Advisor также сохраняется.
+
+**Решение аудита:** delivery-функциональность зафиксирована как реализованная, но перед production-нагрузкой необходимо отдельно закрыть четыре RLS-ошибки и убрать анонимный EXECUTE с двух внутренних courier-функций.
+
+### Результат ежедневной проверки 04.09.2026
+
+- новые изменения после `9b3fb9e` подтверждены как Git-историей, так и фактическим списком миграций Supabase;
+- одноразовые installer/workflow-коммиты не вынесены в отдельные продуктовые этапы;
+- backend-only миграции чата, Drive, сотрудников и приглашений записаны без выдуманных SHA;
+- дубликаты этапов 03.09.2026 не добавлялись;
+- новая контрольная точка журнала: `fa5fe6f1d5b003eac0aa6206512dce87e0245c40`;
+- обнаруженные новые security-проблемы доставки явно оставлены открытыми, а не отмечены как решённые.
 
 ---
 
