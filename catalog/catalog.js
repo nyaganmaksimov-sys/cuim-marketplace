@@ -1,5 +1,7 @@
 import'/geo-core.js';
 import'/marketplace-card-ui.js';
+import'/marketplace-reviews.js';
+import'/marketplace-favorites.js';
 import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/+esm';
 
 const s=createClient('https://qgakliolffnwkymoqvzn.supabase.co','sb_publishable_WbZxATu_lxqWF21jR_qFag_fcEeVIMu');
