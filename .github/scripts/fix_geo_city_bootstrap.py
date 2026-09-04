@@ -14,8 +14,8 @@ s=s.replace(old,new,1)
 start=s.index('async function ensureCities(){')
 end=s.index('\nfunction renderCities(){',start)
 block=s[start:end]
-if block.count('chooseCity();')!=2:
-    raise SystemExit(f'unexpected bootstrap calls: {block.count("chooseCity();")}')
-block=block.replace('chooseCity();','chooseInitialCity();')
+if block.count('chooseCity()')!=2:
+    raise SystemExit(f'unexpected bootstrap calls: {block.count("chooseCity()")}')
+block=block.replace('chooseCity()','chooseInitialCity()')
 s=s[:start]+block+s[end:]
 p.write_text(s,encoding='utf-8')
