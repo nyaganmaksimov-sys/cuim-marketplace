@@ -1,0 +1,37 @@
+name: Install stock status integration
+on:
+  push:
+    paths:
+      - '.github/workflows/install-stock-status.yml'
+      - '.github/scripts/install_stock_status.py'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch marketplace stock status
+        run: python3 .github/scripts/install_stock_status.py
+      - name: Check inline module syntax
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re, subprocess, tempfile
+          for name in ['seller-catalog.html','index.html','seller.html','offer.html','cart.html']:
+              text=Path(name).read_text(encoding='utf-8')
+              blocks=re.findall(r'<script type="module">(.*?)</script>',text,re.S)
+              for i,code in enumerate(blocks):
+                  p=Path(tempfile.gettempdir())/f'{name.replace("/","_")}-{i}.mjs'
+                  p.write_text(code,encoding='utf-8')
+                  subprocess.run(['node','--check',str(p)],check=True)
+          PY
+          git diff --check
+      - name: Commit integration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if git diff --quiet; then exit 0; fi
+          git add seller-catalog.html index.html seller.html offer.html cart.html
+          git commit -m "Add explicit marketplace stock statuses"
+          git push
