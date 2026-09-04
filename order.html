@@ -21,7 +21,7 @@ const id=new URLSearchParams(location.search).get('id');
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
 const money=v=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(Number(v||0));
 const labels={NEW:'Новый заказ',CONFIRMED:'Подтверждён',IN_PROGRESS:'В работе',READY:'Готов к выдаче',COMPLETED:'Выполнен',CANCELLED:'Отменён'};
-const deliveryLabels={NOT_REQUIRED:'Доставка не требуется',WAITING:'Ожидает обработки',OPEN:'Ищем курьера',ASSIGNED:'Курьер назначен',GOING_TO_PICKUP:'Курьер едет за заказом',PICKED_UP:'Заказ забран',IN_TRANSIT:'Заказ в пути',DELIVERED:'Доставлено',CANCELLED:'Доставка отменена'};
+const deliveryLabels={NOT_REQUIRED:'Доставка не требуется',WAITING:'Ожидает обработки',COURIER_SEARCH:'Ищем курьера',COURIER_ASSIGNED:'Курьер назначен',OPEN:'Ищем курьера',ASSIGNED:'Курьер назначен',GOING_TO_PICKUP:'Курьер едет за заказом',PICKED_UP:'Заказ забран',IN_TRANSIT:'Заказ в пути',DELIVERED:'Доставлено',CANCELLED:'Доставка отменена'};
 function initials(v){return String(v||'Ц').split(/\s+/).filter(Boolean).slice(0,2).map(x=>x[0]).join('').toUpperCase()||'Ц'}
 function fmtDate(v){try{return new Intl.DateTimeFormat('ru-RU',{dateStyle:'long',timeStyle:'short'}).format(new Date(v))}catch{return''}}
 function err(title,text){document.getElementById('app').innerHTML=`<div class="error"><h1>${esc(title)}</h1><p>${esc(text)}</p><a class="btn" href="/account.html">Вернуться в кабинет</a></div>`}
@@ -29,5 +29,5 @@ const{data:{session}}=await s.auth.getSession();if(!session){location.href='/log
 </script>
 <script type="module" src="/marketplace-favorites.js"></script>
 <script type="module" src="/marketplace-reviews.js"></script>
-</body>
+<script type="module" src="/customer-delivery-live.js"></script></body>
 </html>
