@@ -32,6 +32,7 @@ jobs:
           grep -q 'href="seller-reviews.html">Отзывы</a>' seller-catalog.html
           grep -q 'href="./seller-orders.html">Заказы продавца</a>' account.html
           grep -q "IN_PROGRESS:'В работе'" account.html
+          grep -q "IN_PROGRESS:'В работе'" order.html
           grep -q 'partner_update_marketplace_order_status' seller-orders.html
           grep -q 'marketplace_reply_product_review' seller-reviews.html
           if grep -R --include='*.html' --include='*.js' -n "IN_WORK" .; then
@@ -42,8 +43,8 @@ jobs:
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add seller-catalog.html account.html
+          git add seller-catalog.html account.html order.html
           if ! git diff --cached --quiet; then
-            git commit -m 'Connect seller orders and reviews workspace'
+            git commit -m 'Align seller order workspace status flow'
             git push
           fi
