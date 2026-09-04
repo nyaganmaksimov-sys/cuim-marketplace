@@ -1,0 +1,32 @@
+name: Install seller notifications
+on:
+  push:
+    paths:
+      - '.github/workflows/install-seller-notifications.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install seller notification UI
+        run: python .github/scripts/install_seller_notifications.py
+      - name: Check seller notification module
+        run: |
+          node --check seller-attention.js
+          grep -q 'MARKETPLACE_ORDER_NEW' seller-attention.js
+          grep -q 'MARKETPLACE_REVIEW_NEW' seller-attention.js
+          grep -q 'data-filter="STORE"' notifications.html
+          for f in account.html seller-catalog.html seller-orders.html seller-reviews.html; do
+            grep -q 'src="/seller-attention.js"' "$f"
+          done
+      - name: Commit integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add account.html seller-catalog.html seller-orders.html seller-reviews.html notifications.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'Connect seller notification badges'
+            git push
+          fi
