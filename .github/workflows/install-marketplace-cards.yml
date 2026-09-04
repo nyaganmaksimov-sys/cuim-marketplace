@@ -1,0 +1,32 @@
+name: Install marketplace card UI
+on:
+  push:
+    paths:
+      - '.github/workflows/install-marketplace-cards.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install card UI
+        run: python .github/scripts/install_marketplace_cards.py
+      - name: Check JavaScript
+        run: |
+          node --check marketplace-card-ui.js
+          node --check catalog/catalog.js
+      - name: Verify integration
+        run: |
+          grep -q '/marketplace-card-ui.js' index.html
+          grep -q '/marketplace-card-ui.js' seller.html
+          grep -q "import'/marketplace-card-ui.js';" catalog/catalog.js
+      - name: Commit integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html seller.html catalog/catalog.js
+          if ! git diff --cached --quiet; then
+            git commit -m 'Upgrade marketplace product cards'
+            git push
+          fi
