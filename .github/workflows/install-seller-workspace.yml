@@ -1,0 +1,45 @@
+name: Install seller orders and reviews
+on:
+  push:
+    paths:
+      - '.github/workflows/install-seller-workspace.yml'
+permissions:
+  contents: write
+jobs:
+  install:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Connect seller workspace
+        run: python .github/scripts/install_seller_workspace.py
+      - name: Extract and check inline modules
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          for name in ('seller-orders.html','seller-reviews.html'):
+              text=Path(name).read_text(encoding='utf-8')
+              m=re.search(r'<script type="module">(.*?)</script>',text,re.S)
+              if not m:
+                  raise SystemExit(f'{name}: module script not found')
+              Path('/tmp/'+name+'.mjs').write_text(m.group(1),encoding='utf-8')
+          PY
+          node --check /tmp/seller-orders.html.mjs
+          node --check /tmp/seller-reviews.html.mjs
+      - name: Verify integration
+        run: |
+          grep -q 'href="seller-orders.html">Заказы</a>' seller-catalog.html
+          grep -q 'href="seller-reviews.html">Отзывы</a>' seller-catalog.html
+          grep -q 'href="./seller-orders.html">Заказы продавца</a>' account.html
+          grep -q "IN_PROGRESS:'В работе'" account.html
+          grep -q 'partner_update_marketplace_order_status' seller-orders.html
+          grep -q 'marketplace_reply_product_review' seller-reviews.html
+      - name: Commit integration
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add seller-catalog.html account.html
+          if ! git diff --cached --quiet; then
+            git commit -m 'Connect seller orders and reviews workspace'
+            git push
+          fi
