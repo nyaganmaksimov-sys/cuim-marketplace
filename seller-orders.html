@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Заказы продавца — ЦУИМ</title>
+<link rel="icon" href="images/logo_cuim.png">
+<style>
+:root{--bg:#f4f7fb;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--blue:#2563eb;--violet:#7c3aed;--green:#059669;--amber:#d97706;--red:#dc2626;--navy:#071633}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}button,input,textarea{font:inherit}.top{height:76px;background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30}.topin,.wrap{width:min(1380px,calc(100% - 28px));margin:auto}.topin{height:100%;display:flex;align-items:center;gap:12px}.logo{width:205px;height:56px;object-fit:contain}.top-actions{margin-left:auto;display:flex;gap:8px;align-items:center}.btn{border:0;border-radius:11px;padding:10px 14px;background:linear-gradient(135deg,var(--blue),var(--violet));color:#fff;font-weight:850;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn.light{background:#fff;color:#334155;border:1px solid #cbd5e1}.btn.green{background:linear-gradient(135deg,#059669,#10b981)}.btn.danger{background:#fff;color:#b91c1c;border:1px solid #fecaca}.btn.small{padding:8px 10px;font-size:11px}.btn:disabled{opacity:.55;cursor:wait}.wrap{padding:24px 0 60px}.hero{background:linear-gradient(135deg,#071633,#172554 60%,#312e81);color:#fff;border-radius:24px;padding:24px;display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin-bottom:14px}.hero h1{margin:0 0 6px;font-size:30px}.hero p{margin:0;color:#cbd5e1}.live{font-size:10px;font-weight:900;color:#86efac;margin-left:7px}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:14px}.metric,.card{background:#fff;border:1px solid var(--line);border-radius:18px}.metric{padding:15px}.metric small{color:var(--muted)}.metric b{display:block;font-size:22px;margin-top:4px}.toolbar{background:#fff;border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}.tabs{display:flex;gap:7px;flex-wrap:wrap}.tab{border:1px solid #cbd5e1;background:#fff;color:#475569;border-radius:999px;padding:8px 11px;font-size:11px;font-weight:850;cursor:pointer}.tab.active{background:#172554;color:#fff;border-color:#172554}.search{margin-left:auto;min-width:280px;flex:1;max-width:430px}.search input{width:100%;border:1px solid #cbd5e1;border-radius:11px;padding:10px 12px}.orders{display:grid;gap:12px}.order{background:#fff;border:1px solid var(--line);border-radius:19px;overflow:hidden}.order-head{padding:15px 17px;border-bottom:1px solid #eef2f7;display:flex;justify-content:space-between;gap:14px;align-items:flex-start}.order-title{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.order-title b{font-size:15px}.muted{color:var(--muted)}.meta{font-size:11px;color:var(--muted);margin-top:4px}.status{display:inline-flex;align-items:center;padding:6px 9px;border-radius:999px;font-size:10px;font-weight:900}.status.NEW{background:#eff6ff;color:#1d4ed8}.status.CONFIRMED{background:#eef2ff;color:#4338ca}.status.IN_PROGRESS,.status.READY{background:#fff7ed;color:#c2410c}.status.COMPLETED{background:#ecfdf5;color:#047857}.status.CANCELLED{background:#fef2f2;color:#b91c1c}.sum{font-size:20px;font-weight:950;white-space:nowrap}.order-grid{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:0}.main{padding:16px 17px;border-right:1px solid #eef2f7}.side{padding:16px 17px;background:#fbfdff}.items{display:grid;gap:8px;margin-bottom:14px}.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;border:1px solid #eef2f7;border-radius:12px;padding:10px;background:#fff}.item b{font-size:12px}.item small{display:block;color:var(--muted);margin-top:3px}.customer{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}.info{border:1px solid #eef2f7;border-radius:12px;padding:10px;background:#fff;min-width:0}.info small{display:block;color:var(--muted);font-size:9px;text-transform:uppercase;letter-spacing:.06em;font-weight:900}.info div,.info a{display:block;margin-top:4px;font-size:12px;color:#0f172a;text-decoration:none;word-break:break-word}.note{margin-top:10px;border:1px solid #e2e8f0;border-radius:12px;padding:10px;background:#f8fafc;font-size:12px;line-height:1.5}.note b{display:block;margin-bottom:4px}.side label{font-size:10px;font-weight:900;color:#475569;display:block;margin-bottom:6px}.side textarea{width:100%;min-height:88px;resize:vertical;border:1px solid #cbd5e1;border-radius:11px;padding:10px;background:#fff}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:10px}.hint{font-size:10px;color:var(--muted);line-height:1.45;margin-top:9px}.empty{background:#fff;border:1px dashed #cbd5e1;border-radius:18px;padding:38px;text-align:center;color:var(--muted)}.gate{min-height:100vh;display:grid;place-items:center;padding:20px}.gatebox{width:min(440px,100%);background:#fff;border:1px solid var(--line);border-radius:22px;padding:25px}.gatebox img{display:block;width:205px;margin:0 auto 18px}.gatebox h1{font-size:24px}.field{display:grid;gap:5px;margin-bottom:10px}.field label{font-size:11px;font-weight:850}.field input{border:1px solid #cbd5e1;border-radius:10px;padding:11px}.error{font-size:11px;color:var(--red);margin-top:8px}.flash{position:fixed;right:18px;bottom:18px;z-index:80;background:#0f172a;color:#fff;border-radius:13px;padding:12px 14px;font-size:12px;font-weight:800;box-shadow:0 16px 45px #0f172a3a;max-width:360px;display:none}.flash.show{display:block}.flash.bad{background:#991b1b}
+@media(max-width:1050px){.metrics{grid-template-columns:repeat(3,1fr)}.order-grid{grid-template-columns:1fr}.main{border-right:0;border-bottom:1px solid #eef2f7}}
+@media(max-width:720px){.top{height:68px}.logo{width:168px;height:50px}.top-actions .hide-mobile{display:none}.wrap{padding-top:14px}.hero{align-items:flex-start;flex-direction:column;padding:20px}.hero h1{font-size:25px}.metrics{grid-template-columns:1fr 1fr}.toolbar{align-items:stretch}.search{margin-left:0;max-width:none;min-width:0;width:100%}.tabs{overflow:auto;flex-wrap:nowrap;padding-bottom:2px}.tab{white-space:nowrap}.order-head{flex-direction:column}.sum{font-size:18px}.customer{grid-template-columns:1fr}.actions .btn{flex:1}.main,.side{padding:14px}.metric b{font-size:19px}}
+</style>
+<script src="/maintenance-guard.js"></script>
+</head>
+<body>
+<div id="gate" class="gate">
+  <div class="gatebox">
+    <img src="images/logo_cuim.png" alt="ЦУИМ">
+    <div id="loginState">
+      <h1>Заказы продавца</h1>
+      <p class="muted">Войдите в аккаунт продавца, чтобы обрабатывать заказы.</p>
+      <form id="loginForm">
+        <div class="field"><label>Email</label><input id="email" type="email" required></div>
+        <div class="field"><label>Пароль</label><input id="password" type="password" required></div>
+        <button class="btn" style="width:100%">Войти</button>
+        <div id="loginErr" class="error"></div>
+      </form>
+    </div>
+    <div id="noPartner" style="display:none">
+      <h1>Профиль продавца не найден</h1>
+      <p class="muted">Этот аккаунт авторизован, но к нему не привязана компания продавца.</p>
+      <div class="actions"><a class="btn" href="account.html">Личный кабинет</a><button class="btn light" id="gateLogout">Выйти</button></div>
+    </div>
+  </div>
+</div>
+<div id="app" style="display:none">
+<header class="top"><div class="topin"><a href="./"><img class="logo" src="images/logo_cuim.png" alt="ЦУИМ"></a><div class="top-actions"><a class="btn light hide-mobile" href="account.html">Кабинет</a><a class="btn light" href="seller-catalog.html">Каталог</a><a class="btn light" href="seller-reviews.html">Отзывы</a><a class="btn light hide-mobile" id="publicProfile" href="#" target="_blank" rel="noopener">Профиль ↗</a><button class="btn" id="logout">Выйти</button></div></div></header>
+<main class="wrap">
+<section class="hero"><div><h1>Заказы <span class="live">● LIVE</span></h1><p>Подтвердите заказ, возьмите его в работу и завершите — покупатель сразу увидит актуальный статус.</p></div><div class="muted" id="heroTotal" style="color:#cbd5e1"></div></section>
+<div class="metrics">
+  <div class="metric"><small>Новые</small><b id="mNew">0</b></div>
+  <div class="metric"><small>Подтверждены</small><b id="mConfirmed">0</b></div>
+  <div class="metric"><small>В работе</small><b id="mWork">0</b></div>
+  <div class="metric"><small>Выполнены</small><b id="mDone">0</b></div>
+  <div class="metric"><small>Выручка выполненных</small><b id="mRevenue">0 ₽</b></div>
+</div>
+<section class="toolbar">
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-filter="ACTIVE">Активные</button>
+    <button class="tab" data-filter="NEW">Новые</button>
+    <button class="tab" data-filter="CONFIRMED">Подтверждены</button>
+    <button class="tab" data-filter="IN_PROGRESS">В работе</button>
+    <button class="tab" data-filter="COMPLETED">Выполнены</button>
+    <button class="tab" data-filter="CANCELLED">Отменены</button>
+    <button class="tab" data-filter="ALL">Все</button>
+  </div>
+  <div class="search"><input id="q" placeholder="Поиск: заказ, покупатель, товар, телефон"></div>
+</section>
+<div id="orders" class="orders"><div class="empty">Загрузка заказов…</div></div>
+</main>
+</div>
+<div id="flash" class="flash"></div>
+<script type="module">
+import{createClient}from'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.112.4/+esm';
+const s=createClient('https://qgakliolffnwkymoqvzn.supabase.co','sb_publishable_WbZxATu_lxqWF21jR_qFag_fcEeVIMu');
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+const money=v=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:0}).format(Number(v||0));
+const dt=v=>v?new Intl.DateTimeFormat('ru-RU',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}).format(new Date(v)):'';
+const statusLabel={NEW:'Новый',CONFIRMED:'Подтверждён',IN_PROGRESS:'В работе',READY:'Готов',COMPLETED:'Выполнен',CANCELLED:'Отменён'};
+const deliveryNames={PICKUP:'Самовывоз',DELIVERY:'Доставка продавца',COURIER:'Курьер',CDEK:'СДЭК',POST:'Почта'};
+let partnerId=null,rows=[],filter='ACTIVE',busy=new Set(),flashTimer=null;
+function toast(text,bad=false){const f=$('flash');f.textContent=text;f.className='flash show'+(bad?' bad':'');clearTimeout(flashTimer);flashTimer=setTimeout(()=>f.className='flash',2800)}
+async function resolvePartner(){const{data:{session}}=await s.auth.getSession();if(!session)return{session:null,partner:null};const{data,error}=await s.rpc('current_partner_id');return{session,partner:error?null:data}}
+async function boot(){const x=await resolvePartner();if(!x.session){$('gate').style.display='grid';$('app').style.display='none';$('loginState').style.display='block';$('noPartner').style.display='none';return}if(!x.partner){$('gate').style.display='grid';$('app').style.display='none';$('loginState').style.display='none';$('noPartner').style.display='block';return}partnerId=x.partner;$('publicProfile').href='seller.html?id='+encodeURIComponent(partnerId);$('gate').style.display='none';$('app').style.display='block';await refresh()}
+$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginErr').textContent='';const{error}=await s.auth.signInWithPassword({email:$('email').value.trim(),password:$('password').value});if(error){$('loginErr').textContent=error.message;return}await boot()};
+$('logout').onclick=async()=>{await s.auth.signOut();location.reload()};$('gateLogout').onclick=async()=>{await s.auth.signOut();location.reload()};
+function actionFor(status){if(status==='NEW')return['CONFIRMED','Подтвердить'];if(status==='CONFIRMED')return['IN_PROGRESS','В работу'];if(status==='IN_PROGRESS'||status==='READY')return['COMPLETED','Выполнен'];return null}
+function deliveryText(o){return o.delivery_method_title||deliveryNames[o.delivery_method]||o.delivery_method||'Не указан'}
+function canCancel(status){return ['NEW','CONFIRMED','IN_PROGRESS','READY'].includes(status)}
+function orderMatches(o){if(filter==='ACTIVE'&&['COMPLETED','CANCELLED'].includes(o.status))return false;if(filter!=='ACTIVE'&&filter!=='ALL'){if(filter==='IN_PROGRESS'){if(!['IN_PROGRESS','READY'].includes(o.status))return false}else if(o.status!==filter)return false}const q=$('q').value.trim().toLowerCase();if(!q)return true;const hay=[o.id,o.customer_name,o.customer_phone,o.customer_email,...(o.items||[]).map(x=>x.title)].join(' ').toLowerCase();return hay.includes(q)}
+function itemHtml(i){const qty=Number(i.quantity||0),unit=i.unit||'шт.';return `<div class="item"><div><b>${esc(i.title||'Позиция')}</b><small>${esc(qty)} ${esc(unit)} × ${money(i.price)}</small></div><strong>${money(Number(i.price||0)*qty)}</strong></div>`}
+function orderHtml(o){const next=actionFor(o.status),cancel=canCancel(o.status),comment=o.partner_comment||'';const delivery=[deliveryText(o),o.delivery_city,o.delivery_address].filter(Boolean).join(' · ');const customerComment=o.comment?`<div class="note"><b>Комментарий покупателя</b>${esc(o.comment)}</div>`:'';return `<article class="order" data-order="${esc(o.id)}"><div class="order-head"><div><div class="order-title"><b>Заказ #${esc(o.id.slice(0,8).toUpperCase())}</b><span class="status ${esc(o.status)}">${esc(statusLabel[o.status]||o.status)}</span></div><div class="meta">${esc(dt(o.created_at))} · ${esc(o.item_count||0)} поз.</div></div><div class="sum">${money(o.total)}</div></div><div class="order-grid"><div class="main"><div class="items">${(o.items||[]).map(itemHtml).join('')||'<div class="muted">Позиции заказа не найдены</div>'}</div><div class="customer"><div class="info"><small>Покупатель</small><div>${esc(o.customer_name||'Не указан')}</div></div><div class="info"><small>Телефон</small>${o.customer_phone?`<a href="tel:${esc(o.customer_phone)}">${esc(o.customer_phone)}</a>`:'<div>—</div>'}</div><div class="info"><small>Email</small>${o.customer_email?`<a href="mailto:${esc(o.customer_email)}">${esc(o.customer_email)}</a>`:'<div>—</div>'}</div><div class="info"><small>Получение</small><div>${esc(delivery||'Не указано')}</div></div></div>${customerComment}${o.delivery_status?`<div class="note"><b>Доставка</b>${esc(o.delivery_status)}${o.tracking_number?' · '+esc(o.tracking_number):''}</div>`:''}</div><aside class="side"><label for="comment-${esc(o.id)}">Комментарий продавца</label><textarea id="comment-${esc(o.id)}" placeholder="Например: заказ будет готов завтра к 16:00">${esc(comment)}</textarea><div class="actions">${next?`<button class="btn green small" data-next="${esc(next[0])}" data-id="${esc(o.id)}">${esc(next[1])}</button>`:''}<button class="btn light small" data-save-comment="${esc(o.id)}">Сохранить комментарий</button><button class="btn light small" data-chat="${esc(o.id)}">Написать покупателю</button>${cancel?`<button class="btn danger small" data-cancel="${esc(o.id)}">Отменить</button>`:''}</div><div class="hint">Статусы идут последовательно: Новый → Подтверждён → В работе → Выполнен. Назад перевести заказ нельзя.</div></aside></div></article>`}
+function render(){const view=rows.filter(orderMatches);$('orders').innerHTML=view.length?view.map(orderHtml).join(''):`<div class="empty">${rows.length?'По выбранному фильтру заказов нет.':'Пока нет заказов. Когда покупатель оформит заказ, он появится здесь автоматически.'}</div>`;bind()}
+function bind(){document.querySelectorAll('[data-next]').forEach(b=>b.onclick=()=>changeStatus(b.dataset.id,b.dataset.next));document.querySelectorAll('[data-cancel]').forEach(b=>b.onclick=()=>{if(confirm('Отменить этот заказ? Покупатель увидит статус «Отменён».'))changeStatus(b.dataset.cancel,'CANCELLED')});document.querySelectorAll('[data-save-comment]').forEach(b=>b.onclick=()=>{const o=rows.find(x=>x.id===b.dataset.saveComment);if(o)changeStatus(o.id,o.status,true)});document.querySelectorAll('[data-chat]').forEach(b=>b.onclick=()=>openChat(b.dataset.chat))}
+async function changeStatus(id,next,commentOnly=false){if(busy.has(id))return;busy.add(id);document.querySelectorAll(`[data-id="${CSS.escape(id)}"],[data-cancel="${CSS.escape(id)}"],[data-save-comment="${CSS.escape(id)}"]`).forEach(x=>x.disabled=true);const note=$('comment-'+id)?.value||'';const{error}=await s.rpc('partner_update_marketplace_order_status',{p_order_id:id,p_status:next,p_partner_comment:note});busy.delete(id);if(error){toast(error.message.includes('INVALID_STATUS_TRANSITION')?'Этот переход статуса уже недоступен. Обновляю список.':'Не удалось обновить заказ: '+error.message,true);await refresh();return}toast(commentOnly?'Комментарий сохранён':'Статус заказа обновлён');await refresh()}
+async function openChat(id){const{data,error}=await s.rpc('marketplace_open_conversation',{p_order_id:id});if(error){toast('Не удалось открыть диалог: '+error.message,true);return}location.href='messages.html?conversation='+encodeURIComponent(data)}
+async function loadSummary(){const{data,error}=await s.rpc('marketplace_partner_order_summary');if(error)return;const x=data?.[0]||{};$('mNew').textContent=x.new_orders||0;$('mConfirmed').textContent=x.confirmed_orders||0;$('mWork').textContent=x.in_progress_orders||0;$('mDone').textContent=x.completed_orders||0;$('mRevenue').textContent=money(x.completed_revenue||0);$('heroTotal').textContent=`Всего заказов: ${x.total_orders||0}`}
+async function loadOrders(){const{data,error}=await s.rpc('marketplace_partner_orders',{p_status:null,p_limit:500});if(error){$('orders').innerHTML=`<div class="empty">Не удалось загрузить заказы: ${esc(error.message)}</div>`;return}rows=data||[];render()}
+async function refresh(){await Promise.all([loadSummary(),loadOrders()])}
+document.querySelectorAll('.tab').forEach(b=>b.onclick=()=>{document.querySelectorAll('.tab').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.filter;render()});$('q').oninput=render;
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&partnerId)refresh()});setInterval(()=>{if(!document.hidden&&partnerId)refresh()},30000);
+boot();
+</script>
+</body>
+</html>
