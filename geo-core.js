@@ -173,7 +173,7 @@ const LOCAL_CITIES=[
   {id:'b3e5b0ad-f657-45ab-a718-3157fdd914ec',name:'Нягань',slug:'nyagan',region_name:'ХМАО — Югра',timezone:'Asia/Yekaterinburg',lat:62.1458,lng:65.4339},
   {id:'a5faed33-d248-4830-8d95-71379982dfc1',name:'Москва',slug:'moscow',region_name:'Москва',timezone:'Europe/Moscow',lat:55.7558,lng:37.6176}
 ];
-function chooseCity(){
+function chooseInitialCity(){
   const wanted=context.city_id?cities.find(x=>x.id===context.city_id):null;
   const bySlug=context.city_slug?cities.find(x=>x.slug===context.city_slug):null;
   city=wanted||bySlug||cities.find(x=>x.slug==='moscow')||cities[0]||null;
@@ -186,11 +186,11 @@ function chooseCity(){
 async function ensureCities(){
   if(cities.length)return cities;
   cities=LOCAL_CITIES.map(x=>({...x}));
-  chooseCity();
+  chooseInitialCity();
   try{
     const timeout=new Promise(r=>setTimeout(()=>r({data:null,error:new Error('geo_cities_timeout')}),3500));
     const result=await Promise.race([s.rpc('marketplace_geo_cities',{p_query:null}),timeout]);
-    if(!result?.error&&result?.data?.length){cities=result.data;chooseCity()}
+    if(!result?.error&&result?.data?.length){cities=result.data;chooseInitialCity()}
   }catch{}
   return cities;
 }
