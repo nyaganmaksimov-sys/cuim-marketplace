@@ -1,0 +1,62 @@
+name: Wire delivery live tracking
+on:
+  push:
+    paths:
+      - '.github/workflows/wire-delivery-live.yml'
+concurrency:
+  group: wire-delivery-live
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          git fetch origin main
+          git checkout -B main origin/main
+      - name: Patch
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('courier.html');s=p.read_text(encoding='utf-8')
+          if '/courier-location.js' not in s:
+              s=s.replace('</body>','<script type="module" src="/courier-location.js"></script></body>',1)
+              p.write_text(s,encoding='utf-8')
+          p=Path('order.html');s=p.read_text(encoding='utf-8')
+          if "COURIER_SEARCH:'Ищем курьера'" not in s:
+              old="const deliveryLabels={NOT_REQUIRED:'Доставка не требуется',WAITING:'Ожидает обработки',OPEN:'Ищем курьера',ASSIGNED:'Курьер назначен',GOING_TO_PICKUP:'Курьер едет за заказом',PICKED_UP:'Заказ забран',IN_TRANSIT:'Заказ в пути',DELIVERED:'Доставлено',CANCELLED:'Доставка отменена'};"
+              new="const deliveryLabels={NOT_REQUIRED:'Доставка не требуется',WAITING:'Ожидает обработки',COURIER_SEARCH:'Ищем курьера',COURIER_ASSIGNED:'Курьер назначен',OPEN:'Ищем курьера',ASSIGNED:'Курьер назначен',GOING_TO_PICKUP:'Курьер едет за заказом',PICKED_UP:'Заказ забран',IN_TRANSIT:'Заказ в пути',DELIVERED:'Доставлено',CANCELLED:'Доставка отменена'};"
+              if old not in s: raise SystemExit('order delivery labels marker not found')
+              s=s.replace(old,new,1)
+          if '/customer-delivery-live.js' not in s:
+              s=s.replace('</body>','<script type="module" src="/customer-delivery-live.js"></script></body>',1)
+          p.write_text(s,encoding='utf-8')
+          PY
+      - name: Check
+        run: |
+          node --check courier-location.js
+          node --check customer-delivery-live.js
+          grep -q '/courier-location.js' courier.html
+          grep -q '/customer-delivery-live.js' order.html
+          grep -q "COURIER_SEARCH:'Ищем курьера'" order.html
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          for f in ['courier.html','order.html']:
+              s=Path(f).read_text(encoding='utf-8')
+              for i,m in enumerate(re.findall(r'<script type="module">(.*?)</script>',s,re.S)):
+                  Path(f'/tmp/{f}_{i}.mjs').write_text(m,encoding='utf-8')
+          PY
+          for f in /tmp/courier.html_*.mjs /tmp/order.html_*.mjs; do node --check "$f"; done
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add courier.html order.html
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'Add live courier tracking to orders'
+            git push origin main
+          fi
