@@ -140,10 +140,10 @@ function wrapSubmit(){
       const ok=$('formMsg')?.classList.contains('ok');
       if(!ok){await cleanupPaths(newUploadPaths);restorePending(newUploadPaths);setMsg('Публикация не сохранена — фото остались в форме, исправьте поля и сохраните снова.',true);return}
       productSaved=true;
-      let pid=beforeId;if(!pid)pid=await resolveNewProduct(beforeTitle,coverUrl);
+      let pid=beforeId||productId();if(!pid)pid=await resolveNewProduct(beforeTitle,coverUrl);
       if(!pid){setMsg('Публикация сохранена, но не удалось привязать галерею. Обложка сохранена как обычно.',true);return}
       setMsg('Сохраняем галерею…');await replaceGallery(pid,beforeTitle);finalizeUploads();
-      if(beforeId){lastProductId=pid;await loadGallery(pid)}else{releaseAll();items=[];lastProductId='';render()}
+      lastProductId=pid;await loadGallery(pid)
       const fm=$('formMsg');if(fm){fm.className='msg ok';fm.textContent='Сохранено. Фото и порядок галереи обновлены.'}
       setMsg('Галерея сохранена.');
     }catch(err){

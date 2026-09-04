@@ -7,7 +7,7 @@ const FALLBACK_CITIES=[
   {id:'b3e5b0ad-f657-45ab-a718-3157fdd914ec',name:'Нягань',slug:'nyagan',region_name:'ХМАО — Югра',timezone:'Asia/Yekaterinburg'},
   {id:'a5faed33-d248-4830-8d95-71379982dfc1',name:'Москва',slug:'moscow',region_name:'Москва',timezone:'Europe/Moscow'}
 ];
-let cities=[...FALLBACK_CITIES],areas=[],partnerId=null,installed=false,saveSeq=0;
+let cities=[...FALLBACK_CITIES],areas=[],partnerId=null,installed=false;
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function type(){return({goods:'PRODUCT',services:'SERVICE',jobs:'JOB',food:'FOOD',auto:'AUTO',ads:'AD',events:'EVENT'})[$('section')?.value]||''}
@@ -75,24 +75,14 @@ function validate(){
   if(cityId())return true;
   const fm=$('formMsg');if(fm){fm.className='msg err';fm.textContent='Для публикации на витрине выберите город.'}return false;
 }
-async function resolveSavedProduct(snap){
-  if(snap.id)return snap.id;if(!await ensurePartner())return null;
-  const since=new Date(snap.startedAt-15000).toISOString();const{data,error}=await s.from('partner_products').select('id,title,created_at').eq('partner_id',partnerId).eq('title',snap.title).gte('created_at',since).order('created_at',{ascending:false}).limit(1);if(error)return null;return data?.[0]?.id||null;
-}
-async function persistLocation(snap){
-  const seq=++saveSeq;
-  for(let i=0;i<300;i++){
-    if(seq!==saveSeq)return;await new Promise(r=>setTimeout(r,200));const fm=$('formMsg');if(fm?.classList.contains('err'))return;if(!fm?.classList.contains('ok'))continue;
-    const id=await resolveSavedProduct(snap);if(!id)return;
-    await s.from('partner_products').update({marketplace_geo_city_id:snap.city||null,marketplace_geo_area_id:snap.area||null,updated_at:new Date().toISOString()}).eq('id',id).eq('partner_id',partnerId);return;
-  }
-}
 function bind(){
   if(!inject())return false;const form=$('offerForm');if(!form)return false;
-  form.addEventListener('submit',e=>{if(!validate()){e.preventDefault();e.stopImmediatePropagation();return}const snap={id:$('id')?.value||'',title:$('title')?.value?.trim()||'',city:cityId(),area:areaId(),startedAt:Date.now()};persistLocation(snap)},true);
+  form.addEventListener('submit',e=>{if(!validate()){e.preventDefault();e.stopImmediatePropagation()}},true);
   document.addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit)setTimeout(()=>loadLocationFor(edit.dataset.edit),140);if(e.target.closest('#newOffer,#reset'))setTimeout(resetLocation,120)});
   loadCities().then(resetLocation);return true;
 }
+
+window.CUIM_SELLER_LOCATION={city:()=>cityId()||null,area:()=>areaId()||null};
 
 if(!bind()){
   let n=0;const t=setInterval(()=>{n++;if(bind()||n>80)clearInterval(t)},125);

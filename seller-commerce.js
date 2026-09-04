@@ -4,8 +4,8 @@ const s=createClient('https://qgakliolffnwkymoqvzn.supabase.co','sb_publishable_
 const $=id=>document.getElementById(id);
 const esc=v=>String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[m]));
 const money=v=>new Intl.NumberFormat('ru-RU',{style:'currency',currency:'RUB',maximumFractionDigits:2}).format(Number(v||0));
-const UNIT_OPTIONS=['шт','компл.','набор','упак.','пара','кг','г','л','мл','м','м²','м³'];
-let partnerId=null,methods=[],installed=false,saveSeq=0;
+const UNIT_OPTIONS=['шт','компл.','набор','упак.','пара','порция','кг','г','л','мл','м','м²','м³'];
+let partnerId=null,methods=[],installed=false;
 
 function type(){return({goods:'PRODUCT',services:'SERVICE',jobs:'JOB',food:'FOOD',auto:'AUTO',ads:'AD',events:'EVENT'})[$('section')?.value]||''}
 function num(id){const v=$(id)?.value?.trim();return v===''||v==null?null:Number(v)}
@@ -18,7 +18,7 @@ function injectUnit(){
   inv.classList.remove('two');inv.classList.add('three');
   const f=document.createElement('div');f.className='field';f.innerHTML=`<label>Единица продажи</label><select id="saleUnit">${UNIT_OPTIONS.map((x,i)=>`<option value="${esc(x)}" ${i===0?'selected':''}>${esc(x)}</option>`).join('')}</select><div class="commerce-mini">Покупатель увидит цену как «за шт.», «за кг», «за набор» и т. п.</div>`;
   inv.appendChild(f);
-  const q=$('quantity');if(q){q.step='0.01';q.placeholder='Оставьте пустым, если остаток не ограничен'}
+  const q=$('quantity');if(q){q.step='1';q.placeholder='Оставьте пустым, если остаток не ограничен'}
 }
 
 function injectPanel(){
@@ -92,32 +92,26 @@ async function disableDelivery(id){
 }
 
 function readiness(){
-  const t=type(),items=[];if(t!=='PRODUCT')return items;
+  const t=type(),items=[];if(!['PRODUCT','FOOD'].includes(t))return items;
   const price=num('price');items.push({ok:price!=null&&!Number.isNaN(price),title:'Цена',text:price==null?'Укажите цену товара.':'Указана '+money(price)});
   const q=num('quantity');items.push({ok:q==null||q>0,title:'Остаток',text:q==null?'Без ограничения остатка.':q>0?`Доступно: ${q}`:'Остаток равен 0 — покупатель не сможет заказать.'});
   const u=unitValue();items.push({ok:!!u,title:'Единица продажи',text:u?'Цена будет показана за '+u+'.':'Выберите единицу продажи.'});
   const photo=Boolean($('imageUrl')?.value?.trim())||Number(window.CUIM_SELLER_GALLERY?.count?.()||0)>0;items.push({ok:photo,title:'Фото',text:photo?'Обложка добавлена.':'Добавьте хотя бы одну фотографию.'});
-  const pickup=checked('d_pickup'),delivery=checked('d_delivery'),hasDelivery=activeDeliveries().length>0;items.push({ok:pickup||(delivery&&hasDelivery),title:'Получение',text:pickup&&delivery&&hasDelivery?'Самовывоз и доставка готовы.':pickup?'Доступен самовывоз.':delivery&&hasDelivery?'Доставка настроена.':delivery?'Вы включили доставку, но способ доставки ещё не настроен.':'Выберите самовывоз или доставку.'});
+  const pickup=checked(t==='FOOD'?'d_food_pickup':'d_pickup'),delivery=checked(t==='FOOD'?'d_food_delivery':'d_delivery'),hasDelivery=activeDeliveries().length>0;items.push({ok:pickup||(delivery&&hasDelivery),title:'Получение',text:pickup&&delivery&&hasDelivery?'Самовывоз и доставка готовы.':pickup?'Доступен самовывоз.':delivery&&hasDelivery?'Доставка настроена.':delivery?'Вы включили доставку, но способ доставки ещё не настроен.':'Выберите самовывоз или доставку.'});
   return items;
 }
 function updateAssist(){
   injectUnit();injectPanel();const t=type(),assist=$('commerceAssist');if(!assist)return;
-  assist.classList.toggle('hidden',t!=='PRODUCT');if(t!=='PRODUCT')return;
+  assist.classList.toggle('hidden',!['PRODUCT','FOOD'].includes(t));if(!['PRODUCT','FOOD'].includes(t))return;
   const list=readiness();$('commerceChecklist').innerHTML=list.map(x=>`<div class="commerce-check ${x.ok?'good':'warn'}"><b>${x.ok?'✓':'!'} ${esc(x.title)}</b>${esc(x.text)}</div>`).join('');$('commerceScore').textContent=`${list.filter(x=>x.ok).length} / ${list.length}`;
   $('deliveryManager').classList.remove('hidden');renderMethods();
 }
 function validateSale(){
-  if(type()!=='PRODUCT'||!$('visible')?.checked)return true;
-  const price=num('price'),old=num('oldPrice'),pickup=checked('d_pickup'),delivery=checked('d_delivery');
+  const t=type();if(!['PRODUCT','FOOD'].includes(t)||!$('visible')?.checked)return true;
+  const price=num('price'),old=num('oldPrice'),pickup=checked(t==='FOOD'?'d_food_pickup':'d_pickup'),delivery=checked(t==='FOOD'?'d_food_delivery':'d_delivery');
   let msg='';if(price==null||Number.isNaN(price))msg='Для товара на витрине укажите цену.';else if(old!=null&&old<=price)msg='Старая цена должна быть выше текущей цены.';else if(!unitValue())msg='Выберите единицу продажи.';else if(!pickup&&!delivery)msg='Выберите хотя бы один способ получения: самовывоз или доставка.';else if(delivery&&!activeDeliveries().length)msg='Вы включили доставку, но не настроили ни одного активного способа доставки.';
   if(!msg)return true;const fm=$('formMsg');if(fm){fm.className='msg err';fm.textContent=msg}updateAssist();return false;
 }
-async function resolveSavedProduct(snapshot){
-  if(snapshot.id)return snapshot.id;if(!await ensurePartner())return null;
-  const since=new Date(snapshot.startedAt-15000).toISOString();const{data,error}=await s.from('partner_products').select('id,title,created_at').eq('partner_id',partnerId).eq('title',snapshot.title).gte('created_at',since).order('created_at',{ascending:false}).limit(1);if(error)return null;return data?.[0]?.id||null
-}
-async function persistUnit(snapshot){
-  const seq=++saveSeq;for(let i=0;i<300;i++){if(seq!==saveSeq)return;await new Promise(r=>setTimeout(r,200));const fm=$('formMsg');if(fm?.classList.contains('err'))return;if(!fm?.classList.contains('ok'))continue;const id=await resolveSavedProduct(snapshot);if(!id)return;const{error}=await s.from('partner_products').update({unit:snapshot.unit,updated_at:new Date().toISOString()}).eq('id',id).eq('partner_id',partnerId);if(!error&&snapshot.id){const cur=$('id')?.value;if(cur===snapshot.id&&$('saleUnit'))$('saleUnit').value=snapshot.unit||'шт'}return}}
 async function loadUnitFor(id){if(!id||!await ensurePartner())return;const{data}=await s.from('partner_products').select('unit').eq('id',id).eq('partner_id',partnerId).maybeSingle();if($('saleUnit'))$('saleUnit').value=UNIT_OPTIONS.includes(data?.unit)?data.unit:(data?.unit||'шт');updateAssist()}
 
 function bindPanel(){
@@ -125,12 +119,14 @@ function bindPanel(){
 }
 function bind(){
   if(installed)return;const form=$('offerForm');if(!form)return;installed=true;injectUnit();injectPanel();
-  form.addEventListener('submit',e=>{if(!validateSale()){e.preventDefault();e.stopImmediatePropagation();return}const snap={id:$('id')?.value||'',title:$('title')?.value?.trim()||'',unit:type()==='PRODUCT'?unitValue():null,startedAt:Date.now()};if(type()==='PRODUCT')persistUnit(snap)},true);
+  form.addEventListener('submit',e=>{if(!validateSale()){e.preventDefault();e.stopImmediatePropagation()}},true);
   for(const id of ['price','oldPrice','quantity','saleUnit','visible','imageUrl'])$(id)?.addEventListener('input',updateAssist);
   $('section')?.addEventListener('change',()=>setTimeout(updateAssist,0));document.addEventListener('cuim:seller-gallery-change',updateAssist);
-  document.addEventListener('change',e=>{if(e.target?.id==='d_pickup'||e.target?.id==='d_delivery')updateAssist()});
+  document.addEventListener('change',e=>{if(['d_pickup','d_delivery','d_food_pickup','d_food_delivery'].includes(e.target?.id))updateAssist()});
   document.addEventListener('click',e=>{const edit=e.target.closest('[data-edit]');if(edit)setTimeout(()=>loadUnitFor(edit.dataset.edit),120);if(e.target.closest('#newOffer,#reset'))setTimeout(()=>{if($('saleUnit'))$('saleUnit').value='шт';updateAssist()},100)});
   loadMethods();updateAssist();
 }
+
+window.CUIM_SELLER_COMMERCE={unit:()=>unitValue(),update:()=>updateAssist()};
 
 let tries=0;const timer=setInterval(()=>{tries++;if($('offerForm')){clearInterval(timer);bind()}else if(tries>100)clearInterval(timer)},100);
