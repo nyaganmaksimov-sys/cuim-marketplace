@@ -34,6 +34,10 @@ jobs:
           grep -q "IN_PROGRESS:'В работе'" account.html
           grep -q 'partner_update_marketplace_order_status' seller-orders.html
           grep -q 'marketplace_reply_product_review' seller-reviews.html
+          if grep -R --include='*.html' --include='*.js' -n "IN_WORK" .; then
+            echo 'Legacy IN_WORK status remains in frontend files'
+            exit 1
+          fi
       - name: Commit integration
         run: |
           git config user.name 'github-actions[bot]'
