@@ -1,0 +1,60 @@
+name: Install delivery navigation
+on:
+  push:
+    paths:
+      - '.github/workflows/install-delivery-links.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch navigation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          def rep(path, old, new):
+              p=Path(path); s=p.read_text(encoding='utf-8')
+              if old not in s: raise SystemExit(f'{path}: marker not found')
+              p.write_text(s.replace(old,new,1),encoding='utf-8')
+          rep('admin/index.html',
+              '<button class="nav-link" data-tab="orders"><span class="nav-ico">▤</span>Заказы</button><button class="nav-link" data-tab="customers">',
+              '<button class="nav-link" data-tab="orders"><span class="nav-ico">▤</span>Заказы</button><a class="nav-link" href="./delivery.html"><span class="nav-ico">🚚</span>Доставка</a><button class="nav-link" data-tab="customers">')
+          rep('admin/index.html',
+              '<a class="quick" href="#partners" data-go="partners"><i>🏪</i><b>Продавцы</b><span>Публикация компаний и управление профилями.</span></a><a class="quick" href="./categories.html">',
+              '<a class="quick" href="#partners" data-go="partners"><i>🏪</i><b>Продавцы</b><span>Публикация компаний и управление профилями.</span></a><a class="quick" href="./delivery.html"><i>🚚</i><b>Доставка</b><span>Курьеры, назначения и контроль маршрутов.</span></a><a class="quick" href="./categories.html">')
+          rep('seller-orders.html',
+              '<a class="btn light" href="seller-catalog.html">Каталог</a><a class="btn light" href="seller-reviews.html">Отзывы</a>',
+              '<a class="btn light" href="seller-catalog.html">Каталог</a><a class="btn light" href="seller-delivery.html">Доставка</a><a class="btn light" href="seller-reviews.html">Отзывы</a>')
+          rep('seller-catalog.html',
+              '<a class="btn light" href="seller-orders.html">Заказы</a><a class="btn light" href="seller-reviews.html">Отзывы</a>',
+              '<a class="btn light" href="seller-orders.html">Заказы</a><a class="btn light" href="seller-delivery.html">Доставка</a><a class="btn light" href="seller-reviews.html">Отзывы</a>')
+          PY
+      - name: Verify pages and inline modules
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          for f in ['admin/delivery.html','courier.html','seller-delivery.html']:
+              s=Path(f).read_text(encoding='utf-8')
+              mods=re.findall(r'<script type="module">(.*?)</script>',s,re.S)
+              if not mods: raise SystemExit(f'{f}: inline module not found')
+              Path('/tmp/'+f.replace('/','_')+'.mjs').write_text('\n'.join(mods),encoding='utf-8')
+          PY
+          node --check /tmp/admin_delivery.html.mjs
+          node --check /tmp/courier.html.mjs
+          node --check /tmp/seller-delivery.html.mjs
+          grep -q 'delivery.html' admin/index.html
+          grep -q 'seller-delivery.html' seller-orders.html
+          grep -q 'seller-delivery.html' seller-catalog.html
+      - name: Commit
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add admin/index.html seller-orders.html seller-catalog.html
+          git diff --cached --check
+          if ! git diff --cached --quiet; then
+            git commit -m 'Link delivery management pages'
+            git push
+          fi
