@@ -866,6 +866,162 @@
 
 Коммиты продукта: новых нет. Коммит этой журнальной записи фиксируется отдельно и не считается новой продуктовой контрольной точкой.
 
+## 07–08.09.2026 — кассовый baseline, возвраты и Realtime рабочего места HUB
+
+**Статус:** APPLIED / BACKEND  
+**Подсистема:** POS / cash / returns / realtime / production / payments
+
+Что изменено:
+
+- добавлен явный baseline остатка наличных для POS-кассы, чтобы текущий физический остаток можно было согласовать с историей операций без переписывания старых транзакций;
+- исправлена синхронизация возврата в кассу: добавлено требуемое уникальное ограничение/совместимый upsert-контур для `sync_pos_return_cash_transaction`;
+- включён Realtime-контур центра управления HUB;
+- отдельно выданы необходимые authenticated-доступы для Realtime по production jobs и payments без открытия анонимного доступа;
+- добавлен профиль смены POS, чтобы серверная сводка смены могла работать с явным профилем/контекстом кассира.
+
+Миграции:
+
+- `20260907175934` — `add_pos_cash_balance_baseline`;
+- `20260907185933` — `fix_pos_return_cash_upsert_constraint`;
+- `20260907192555` — `enable_hub_control_center_realtime`;
+- `20260908052749` — `grant_authenticated_production_jobs_access`;
+- `20260908054334` — `grant_payments_realtime_workspace`;
+- `20260908131241` — `add_pos_shift_profile`.
+
+Проверка:
+
+- миграции присутствуют в production-истории Supabase;
+- `record_pos_sale`, `pos_shift_summary` и `create_customer_invoice` остаются недоступны `anon`;
+- RLS включён на `production_jobs` и `payments`.
+
+Коммиты продукта: новых Git-коммитов после журнального `eb873b5` не найдено.
+
+## 08.09.2026 — второй Security Hardening: courier, support/POS RPC и публичные write-RPC
+
+**Статус:** DONE / AUTH FOLLOW-UP OPEN  
+**Подсистема:** security / courier / support / POS / RPC / Data API
+
+Что изменено:
+
+- закрыт ранее отмеченный security follow-up доставки: `courier_invites`, `courier_delivery_events`, `courier_delivery_tariffs` и `courier_payout_entries` переведены под RLS;
+- усилен прямой Data API для courier-контура;
+- пересмотрены внутренние Support/POS RPC и сняты лишние клиентские права там, где вызов не должен идти напрямую из браузера;
+- исправлены оставшиеся исторические `PUBLIC` grants на внутренних функциях;
+- публичные write-RPC получили отдельную защиту от злоупотреблений.
+
+Миграции:
+
+- `20260908093750` — `harden_courier_data_api`;
+- `20260908095107` — `harden_internal_support_pos_rpcs`;
+- `20260908095124` — `fix_internal_function_public_grants`;
+- `20260908095406` — `public_write_rpc_abuse_protection`.
+
+Проверка:
+
+- фактически подтверждено `relrowsecurity=true` для `courier_invites`, `courier_delivery_events`, `courier_delivery_tariffs` и `courier_payout_entries`;
+- предыдущая запись 04.09 о выключенном RLS для этих четырёх таблиц считается закрытым историческим follow-up, а не текущим состоянием;
+- leaked-password protection Supabase Auth остаётся отдельной настройкой и этим набором DB-миграций не закрывается.
+
+Коммиты продукта: новых нет.
+
+## 08.09.2026 — подготовка продавцов Москвы к запуску
+
+**Статус:** APPLIED / BACKEND  
+**Подсистема:** marketplace / sellers / Moscow / admin / geo / readiness
+
+Что изменено:
+
+- введён серверный readiness-gate для московских продавцов;
+- администратор получил сводку готовности партнёров и детальную проверку конкретного продавца;
+- продавцу добавлен self-service RPC обновления московского публичного профиля, адреса/координат, режима обслуживания и радиуса;
+- административное обновление профиля вынесено в отдельный guard-защищённый RPC.
+
+Миграции:
+
+- `20260908145917` — `moscow_seller_readiness_gate`;
+- `20260908150227` — `add_moscow_seller_admin_readiness_tools`;
+- `20260908151042` — `add_moscow_partner_self_service_profile`.
+
+Важное техническое решение:
+
+- readiness рассчитывается на сервере через `marketplace_partner_readiness(...)`, а admin-выдача использует `marketplace_admin_guard()`; это не клиентская эвристика и не доверие полям формы.
+
+Проверка:
+
+- в production подтверждены две перегрузки `marketplace_admin_partner_readiness(...)`;
+- admin RPC являются `SECURITY DEFINER` и внутри явно проверяют `marketplace_admin_guard()`.
+
+Коммиты продукта: новых нет.
+
+## 08.09.2026 — единая цепочка производство → заказ → платежи → документы
+
+**Статус:** APPLIED / BACKEND  
+**Подсистема:** production / orders / payments / customers / documents / RLS
+
+Что изменено:
+
+- статус заказа синхронизируется с производственным заданием через серверный trigger-контур;
+- trigger отдельно усилен, чтобы не превращать техническую функцию в клиентский RPC;
+- платежи связаны с документами клиента;
+- для документов добавлены HUB staff policies;
+- нормализованы defaults платежей и отдельно исправлен default типа платежа;
+- при создании клиентского счёта автоматически выпускается документ `INVOICE` с уникальным номером и snapshot реквизитов клиента;
+- `order_status_history` получил authenticated-доступ, необходимый рабочему HUB-контексту, при сохранённом RLS.
+
+Миграции:
+
+- `20260908151405` — `sync_order_status_from_production`;
+- `20260908151429` — `production_job_order_status_trigger`;
+- `20260908151454` — `harden_production_order_status_trigger`;
+- `20260908152228` — `link_payments_to_customer_documents`;
+- `20260908152320` — `documents_hub_staff_policies`;
+- `20260908152405` — `normalize_hub_payments_defaults`;
+- `20260908153209` — `fix_hub_payment_type_default`;
+- `20260908153445` — `issue_customer_invoice_on_creation`;
+- `20260908164133` — `grant_order_status_history_authenticated`.
+
+Проверка:
+
+- `create_customer_invoice(...)` в production требует роль `ADMIN` или `MANAGER`, проверяет положительную сумму и существование клиента;
+- номер счёта формируется серверно, а реквизиты фиксируются snapshot-объектом в документе;
+- RLS включён на `documents`, `customer_documents`, `payments`, `production_jobs` и `order_status_history`.
+
+Коммиты продукта: новых нет.
+
+## 08.09.2026 — оборудование, расходники и сервисная история
+
+**Статус:** APPLIED / BACKEND  
+**Подсистема:** equipment / inventory / consumables / service / database / security
+
+Что изменено:
+
+- добавлен контур учёта оборудования и связанных расходных материалов;
+- складской остаток расходников защищён от ухода в недопустимое состояние;
+- генератор инвентарных номеров усилен как внутренняя функция;
+- сервисный журнал синхронизирует даты обслуживания оборудования.
+
+Миграции:
+
+- `20260908165124` — `equipment_inventory_and_consumables`;
+- `20260908165154` — `protect_consumable_stock_balance`;
+- `20260908165901` — `harden_equipment_inventory_number_function`;
+- `20260908171610` — `equipment_service_log_sync`.
+
+Проверка:
+
+- в production присутствуют функции `next_equipment_inventory_number`, `check_equipment_consumable_stock`, `sync_equipment_service_dates` и `touch_equipment_updated_at`;
+- все четыре миграции присутствуют в фактической истории проекта.
+
+Коммиты продукта: новых нет.
+
+### Результат ежедневной проверки 08.09.2026
+
+- после предыдущего журнального коммита `eb873b5` новых продуктовых Git-коммитов не найдено;
+- добавлены только фактически присутствующие production-миграции после уже учтённой `pos_cash_operations`;
+- ранее открытый courier RLS follow-up отмечен как закрытый только после проверки фактического `relrowsecurity=true` на четырёх таблицах;
+- backend-only этапам не присвоены выдуманные продуктовые SHA;
+- продуктовая контрольная точка остаётся `e3f1aa5884103252f4f13069632b7ca109212ec3`.
+
 ---
 
 # Полный технический след
