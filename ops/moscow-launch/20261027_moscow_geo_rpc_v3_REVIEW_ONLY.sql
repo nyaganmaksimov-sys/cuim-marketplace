@@ -71,7 +71,7 @@ begin
   where p.id=v_partner_id
   returning p.id,v_city.id,v_city.name,v_area.id,v_area.name,p.marketplace_address,p.marketplace_latitude,p.marketplace_longitude,p.marketplace_service_mode,p.marketplace_service_radius_m;
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.marketplace_partner_update_moscow_profile(p_description text, p_photo_url text, p_cover_url text, p_address text, p_latitude double precision, p_longitude double precision, p_service_mode text DEFAULT 'LOCAL'::text, p_service_radius_m integer DEFAULT 5000)
  RETURNS jsonb
@@ -159,7 +159,7 @@ begin
     'readiness',public.marketplace_partner_readiness(v_partner_id)
   );
 end;
-$function$
+$function$;
 
 CREATE OR REPLACE FUNCTION public.marketplace_partner_readiness(p_partner_id uuid)
  RETURNS jsonb
@@ -246,6 +246,6 @@ begin
     'moscow_city_id',v_moscow_city
   );
 end;
-$function$
+$function$;
 
 COMMIT;
